@@ -260,9 +260,9 @@ type ConstantValueObject struct {
 
 Atomic commit protocolとは、複数の操作の集合を1つの処理として実行可能にするプロトコルである。代表的なものとしては、[Two-phase commit](https://en.wikipedia.org/wiki/Two-phase_commit_protocol)や[Three-phase commit](https://en.wikipedia.org/wiki/Three-phase_commit_protocol)などがある。
 
-Cross Frameworkでは、現在、Naive commit protocol, Two-phase commit protocolの2種類のプロトコルをサポートしている。Naive protocolは参加者が2者に限られる。Two-phase commitは参加者が3者以上であってもサポートできるが、Naive protocolと比較するとフロー中のステップ数が多くなっており、つまり完了までの時間が長くなる。
+Cross Frameworkでは、現在、Simple commit protocol, Two-phase commit protocolの2種類のプロトコルをサポートしている。Simple protocolは参加者が2者に限られる。Two-phase commitは参加者が3者以上であってもサポートできるが、Simple protocolと比較するとフロー中のステップ数が多くなっており、つまり完了までの時間が長くなる。
 
-各方式の詳細については、Two-phase commit protocol, Naive commit protocol をそれぞれ参照。
+各方式の詳細については、Two-phase commit protocol, Simple commit protocol をそれぞれ参照。
 
 
 ## Two-phase commit protocol
@@ -331,16 +331,16 @@ aについては、[State storeとLocking mechanism](#state-storeとlocking-mech
 bについては、CoordinatorのState machineをBFT consensusを行うChain上で実行することにより保たれると考える。
 
 
-## Naive commit protocol
+## Simple commit protocol
 
 **プロトコルの概要**
 
-Naive commit protocolは、Participantの数に対する制約があるAtomic commitのprotocolである。Two phase commit protocolとは異なり、Participantは2つである必要があり、またそれらのどちらかがCoordinatorの役割を担う必要がある。
+Simple commit protocolは、Participantの数に対する制約があるAtomic commitのprotocolである。Two phase commit protocolとは異なり、Participantは2つである必要があり、またそれらのどちらかがCoordinatorの役割を担う必要がある。
 
 **Commitのフロー**
 
 
-![Naive commit flow](https://paper-attachments.dropbox.com/s_BF6A6C558FB10E2A2F4E74E9F7B342EF6228422735BC5F474C1D1BF9C0273659_1597826874435_Screenshot+from+2020-08-19+17-47-27.png)
+![Simple commit flow](https://paper-attachments.dropbox.com/s_BF6A6C558FB10E2A2F4E74E9F7B342EF6228422735BC5F474C1D1BF9C0273659_1597826874435_Screenshot+from+2020-08-19+17-47-27.png)
 
 
 
@@ -350,7 +350,7 @@ Naive commit protocolは、Participantの数に対する制約があるAtomic co
     - ユーザは、Cross-chain transactionを開始するために`MsgInitiate`をInitiator chainに提出する
 
 
-    - Naive commit flowにおいてInitiator chainはCoordinatorとParticipantのロールを兼ねる
+    - Simple commit flowにおいてInitiator chainはCoordinatorとParticipantのロールを兼ねる
 
 
 2. Prepare(A)
