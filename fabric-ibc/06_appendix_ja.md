@@ -1,0 +1,16 @@
+# Appendix
+
+## RelayerのPrivacyに関して
+
+CosmosのRelayerは、[このような設定](https://github.com/datachainlab/cross/blob/adbf051333acb1f8fbcbae6ff2888d477a4bfeb9/tests/demo/path01.json#L1)と両Blockchainの接続情報などを構成したうえで、1つのRelayerが双方を監視して、他方のchainに対してPacket transactionを提出する方式である。そのため、Relayerは以下の権限をもっていることが前提となる。
+
+1. 送信元Blockchainに対してEventをQueryできる
+2. 送信元BlockchainのStateに対してQueryできる
+3. 双方のBlockchainに対してTransactionを提出できる
+
+しかし、Permissioned BlockchainであるFabricのRelayerが上記を全て満たすのは一般的に難しい。特に1.、2.を満たすには、異なる2つの台帳を閲覧できるRelayer運用者の存在を仮定する必要があり、プライバシーの問題が懸念されるためである。
+
+そこで、Fabric-IBCにおいては、送信元ChainのChaincodeに対して読み書きできる（1つ以上の）OrganizationがRelayerを運用することを推奨する。
+
+1.、2.はChaincodeの運用を行うOrganizationの特定のroleが行うことでプライバシー上の問題を回避できる。
+3.については特定のIBCの機能を提供するFunctionのみにそのRelayerに許可することにより、StateのWrite権限を付与しつつも、不要なStateを公開することを避けることができる。

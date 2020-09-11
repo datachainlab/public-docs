@@ -1,0 +1,30 @@
+# Key Concepts
+
+## ICS準拠
+
+[ICS](https://github.com/cosmos/ics)という標準化が進んでいるブロックチェーン間コミュニケーションの仕様をサポートする。
+これにより、ICS仕様を実装するBlockchain、DLT、従来の中央システムとのコミュニケーションが可能となる。
+
+## コミュニケーションの自動化
+
+Fabric-IBCでは、一方のBlockchainから送信されたPacketはRelayer serviceを通して自動で対象のBlockchainにRelayされる。
+これによりBlockchain間にまたがった処理を行うクライアントは、Relay先のBlockchainへの操作をする必要がなく、透過的に他のBlockchainとのコミュニケーションが可能となる。
+
+## Trusted third-partyを前提としない
+
+Trusted third-party(TTP)とは、IBCを行う各Blockchainの信頼以外に必要とする信頼された第三者のことである。
+現在、Interoperabilityを実現するソリューションでは、TTPが関連するBlockchainの状態をコーディネート、およびその状態を保持することで実現することが多い。
+しかし、一般的にTTPを前提としたブロックチェーン間ネットワークの形成は難しい。
+
+一方、Fabric-IBCはTTPを前提としない。Fabric-IBCで上記の役割を担うRelayer serviceの運用者は、ネットワークにアクセス可能な存在であれば誰でも実行可能である。つまり、それぞれのBlockchainのコンセンサス実行以外に信頼される存在を置かずに、Blockchain間コミュニケーションが可能となる。
+
+## 既存のChaincode実装との連携を容易にする
+
+IBCを利用したアプリケーションを開発するには、ユーザのアプリケーションロジックを実装したModuleを、Chaincode内のFabric-IBCにセットすることで可能となる。
+
+Fabric上でIBCに対応するChaincodeを実装したい開発者は、既存のChaincode上のビジネスロジックやデータモデルを容易に移行できる。Fabric-IBCはそのために、Chaincode shim APIのwrapperを提供する。
+
+## 拡張性の高いアーキテクチャ
+
+Fabric-IBCのコアは、Blockchainのコミュニケーションの手段であるPacketを送受信する機能にフォーカスしている。開発者は独自のモジュールを開発可能で、例えばPacketのデータのセキュリティやプライバシーを強化するような機能を持たせるといったことができる。
+すでにいくつかのモジュールを我々は開発している。Private module, Cross Framework, etc.
