@@ -307,7 +307,7 @@ Cross Frameworkでは、現在、Simple commit protocol, Two-phase commit protoc
 
     - Coordinator chainは、Prepare stepにおいて各Participant chainが送信する`PacketPrepareAcknowledgement`を受け取る。各ACKの処理については、以下のような状態遷移を行う
         1. ACKを待っている
-        2. 受信したACKの`Status`が”OK”かつ未受信のACKがある場合、iに遷移する。すべて受信した場合、Commit要求をするためにCommit stepに進む
+        2. 受信したACKの`Status`が”OK”かつ未受信のACKがある場合、1.に遷移する。すべて受信した場合、Commit要求をするためにCommit stepに進む
         3. 受信したACKの`Status`が”Failed”の場合、Abort要求をするためにCommit stepに進む
 
 
