@@ -177,7 +177,6 @@ RelayerはFabricのclient機能を有するサービスである。そのため�
 
 Fabric-IBCでは、Permissioned Blockchain上のStateを他のBlockchainにRelayするという点に関して、プライバシーの問題が起こり得る。これに関する整理は以下を参照のこと。
 
-// TODO Appendix見出しへの適切なanchor
 [RelayerのPrivacyに関して](06_appendix_ja.md#relayerのprivacyに関して) 
 
 ## Fabric-IBC Modules
