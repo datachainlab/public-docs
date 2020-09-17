@@ -2,12 +2,13 @@
 
 # Introduction
 
-Cross Frameworkは、複数の異なるBlockchainに分散した情報の参照や機能の実行を行う、Cross-chain Smart Contract の開発を可能にするフレームワークである。これにより従来、中央システムの介在により実現していた複数chainにまたがる機能の開発や、そうでないにしてもその都度安全なプロトコル設計を行ってきた開発者は、このフレームワークにより容易に安全なCross-chain間の呼び出しが可能となる。
+Cross Frameworkは、複数の異なるBlockchainに分散したデータの参照や機能の実行を行う、Cross-chain smart contract の開発を可能にするフレームワークである。このフレームワークを導入することにより、信頼されたシステムの介在なく、安全性を保証するための複雑なプロトコル設計・開発のコストを低減することが可能となる。それにより複数のBlockchain間でさらに多様な連携を安全性を保証しつつ実現させることができる。
 
 
 ## Smart contract
 
 Smart contractとは、Blockchainの状態遷移を定義したものである。ユーザが生成したTransactionによって実行され、新たな状態へ更新を行う。EthereumやHyperledger fabricなど多くのブロックチェーンにおいて、単一のChain or Channelの処理を行うトランザクションのみがサポートされており、他のブロックチェーンとのInteroperabilityは考慮されていないものが多い。
+
 Smart contractの記述言語は、ブロックチェーンやDLTごとに様々なものがサポートされており、Cross Frameworkにおいては現在Go言語のサポートがされている。
 
 
@@ -82,6 +83,7 @@ Cross-chain smart contractとは、ICS-04のChannelで接続された複数の�
 ## Cross Framework
 
 Cross Frameworkは、Cross-chain Smart Contractの開発およびそれらに対するCross-chain Transactionsのサポートを可能にするFrameworkである。
+
 フレームワークは、Cross-chain transactionsをサポートするためのCross ModuleとSmart contractを提供するContract Moduleから構成される。Cross Moduleは、Cross-chain transactionsを実現するために必要なModuleである。これはIBC Moduleを介した他のChainとのAtomic commitのためのプロトコルを実装するCross Handlerとそれらの状態を保持するStoreから構成される。Contract Moduleは、Smart Contractを提供するContract handler、それらの状態を保持するState storeから構成される。
 
 ![Fig. Architecture](https://paper-attachments.dropbox.com/s_BF6A6C558FB10E2A2F4E74E9F7B342EF6228422735BC5F474C1D1BF9C0273659_1599547501386_Screenshot+from+2020-09-08+15-44-26.png)
@@ -227,7 +229,7 @@ type Link struct {
 
 `SrcIndex`により、呼び出し先のContract関数の実行を処理するTransactionを示す`ContractTransactions`のインデックスを指定する。
 
-`MsgInitiate`を受け取ったInitiator chainは、`ContractTransactions`の各要素のLinkの情報を元に呼び出し先のContract関数のChainIDと返り値を含むオブジェクト `ConstantValueObject` に解決され、各参照元のContract関数内の外部呼び出しはこの`ConstantValueObject`に置き換えられる。
+`MsgInitiate`を受け取ったInitiator chainは、`ContractTransactions`の各要素のLinkの情報を呼び出し先のContract関数のChainIDと返り値を含むオブジェクト `ConstantValueObject` に解決し、Linkの参照元のContract関数内の外部呼び出しはこの`ConstantValueObject`に置き換えられる。
 
 以下のようなステップで実行される。
 
@@ -252,7 +254,7 @@ type ConstantValueObject struct {
 3. Coordinator chainは、Atomic commit flowに従い、`ContractTransaction`と2の`ConstantValueObject`および参照先の呼び出し情報をPacketのDataとしてセットし、各ChainのContract handlerに送信する
 
 
-4. ChainのContract handlerは、受け取ったPacketの呼び出し情報に従い、Contract関数を実行する。関数内の外部Contract関数の呼び出し時に、プログラム中の参照先の呼び出し情報と比較し、一致している場合、`ConstantValueObject`の`Value`を返す。一致していない場合、その関数の処理は失敗となる。
+4. ChainのContract handlerは、受け取ったPacketの呼び出し情報に従い、Contract関数を実行する。関数内の外部Contract関数の呼び出し時に、プログラム中の参照先のChainIDおよび呼び出し情報と比較し、一致している場合、`ConstantValueObject`の`Value`を返す。一致していない場合、その関数の処理は失敗となる。
 
 
 
@@ -324,10 +326,13 @@ Cross Frameworkでは、現在、Simple commit protocol, Two-phase commit protoc
 **故障耐性について**
 
 通常2PCのプロトコルは、Coordinatorの故障の場合にブロッキングプロトコルであることが知られている。Hung Dangらの[”Towards Scaling Blockchain Systems via Sharding”](https://www.comp.nus.edu.sg/~hungdang/papers/sharding.pdf)でも指摘されているようにCross-chain上でのAtomic commitの実現にあたり、以下のプロパティを満たす必要があると考える。
+
 a. GeneralなTransactionに対してのsafety
+
 b. 悪意のあるCoordinatorに対してのliveness
 
 aについては、[State storeとLocking mechanism](#state-storeとlocking-mechanism)で提供されるロックメカニズムにより安全性が保たれる。
+
 bについては、CoordinatorのState machineをBFT consensusを行うChain上で実行することにより保たれると考える。
 
 
@@ -405,4 +410,4 @@ Cross Frameworkでは、デフォルトのState storeの実装として各変更
 | Set(K, V)       | Kへの排他ロック |
 | Delete(K)       | Kへの排他ロック |
 
-Cross Frameworkでは、このようなState storeをTendermint/Cosmosに関しては、[KVStore](https://docs.cosmos.network/master/core/store.html)として提供し、Fabricに関しては、Chaincode上のStateへのoperationの[API](https://github.com/hyperledger/fabric-chaincode-go/blob/master/shim/interfaces.go#L28)を実装したものをwrapするKVStore互換のインタフェースを実装したStoreを提供する。
+Cross Frameworkでは、このようなState storeをTendermint/Cosmosに関しては、[KVStore](https://docs.cosmos.network/master/core/store.html)として提供し、Hyperledger Fabricに関しては、Chaincode上のStateへのoperationの[API](https://github.com/hyperledger/fabric-chaincode-go/blob/master/shim/interfaces.go#L28)を実装したものをwrapするKVStore互換のインタフェースを実装したStoreを提供する。
