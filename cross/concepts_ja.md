@@ -293,13 +293,13 @@ Cross Frameworkでは、現在、Simple commit protocol, Two-phase commit protoc
 2. Prepare step
 
 
-    - 各Participant chainsは、`PacketPrepare`を受け取ると、[Cross-chain-transactionの作成と検証](#cross-chain-transactionの作成と検証)の章で説明したContractTransactionで指定されるContract関数を実行する(この際、実際にコミットはされないことに注意する)。
+    - 各Participant chainsは、`PacketPrepare`を受け取ると、[Cross-chain-transactionの作成と検証](#cross-chain-transactionの作成と検証)の章で説明した`ContractTransaction`で指定されるContract関数を実行する。この際、実際にコミットはされないことに注意する。
 
 
-    - 実行に成功した場合、State storeに対しての変更についてのロックを取得する。このロックメカニズムの詳細は、[State storeとLocking mechanism](#state-storeとlocking-mechanism)の章で説明している。最後にACK `PacketPrepareAcknowledgement`のStatusに成功を示す`PREPARE_RESULT_OK`をセットして返す
+    - 実行に成功した場合、State storeに対しての変更操作の保存と変更対象へのロックを取得する。この変更操作とロックについての仕組みの詳細は、[State storeとLocking mechanism](#state-storeとlocking-mechanism)の章で説明している。最後にACK `PacketPrepareAcknowledgement`の`Status`に成功を示す`PREPARE_RESULT_OK`をセットして返す
 
 
-    - 実行に失敗した場合、変更操作を破棄して、ACK `PacketPrepareAcknowledgement` の`Status`に失敗を示す`PREPARE_RESULT_FAILED`をセットして返す
+    - 実行に失敗した場合、State storeに対しての変更操作を破棄して、ACK `PacketPrepareAcknowledgement` の`Status`に失敗を示す`PREPARE_RESULT_FAILED`をセットして返す
 
 
 
@@ -308,18 +308,18 @@ Cross Frameworkでは、現在、Simple commit protocol, Two-phase commit protoc
 
     - Coordinator chainは、Prepare stepにおいて各Participant chainが送信するACK `PacketPrepareAcknowledgement`を受け取る。各ACKの処理については、以下のような状態遷移を行う
         1. 次のACKの受信待ち
-        2. 受信したACKの`Status`が`PREPARE_RESULT_OK`かつ未受信のACKがある場合、1.に遷移する。すべて受信した場合、各Participant chainにCommit要求をするためにCommit stepに進む
-        3. 受信したACKの`Status`が`PREPARE_RESULT_FAILED`の場合、各Participant chainにAbort要求をするためにCommit stepに進む
+        2. 受信したACKの`Status`が`PREPARE_RESULT_OK`かつ未受信のACKがある場合、1.に遷移する。すべて受信した場合、各Participant chainにCommit要求をするためにPacket `PacketCommit`の`Status`に`COMMIT`をセットして送信し、Commit stepに進む
+        3. 受信したACKの`Status`が`PREPARE_RESULT_FAILED`の場合、各Participant chainにAbort要求をするためにPacket `PacketCommit`の`Status`に`ABORT`をセットして送信し、Commit stepに進む
 
 
 
 4. Commit step
 
 
-    - 各Participant chainsは、Commit要求があった場合、Prepare stepでロックしていた変更をState storeに適用し、ロックを削除してCoordinator chainに完了済みを示す`PacketCommitAcknowledgement`を送信する
+    - 各Participant chainsは、Commit要求があった場合(`PacketCommit`の`Status`が`COMMIT`)、Prepare stepで保存していた変更操作をState storeに適用し、ロックを削除してCoordinator chainに完了済みを示す`PacketCommitAcknowledgement`を送信する
 
 
-    - 各Participant chainsは、Abort要求があった場合、Prepare stepでロックしていた変更とロックを削除してCoordinator chainに完了済みを示す`PacketCommitAcknowledgement`を送信する
+    - 各Participant chainsは、Abort要求があった場合(`PacketCommit`の`Status`が`ABORT`)、Prepare stepで保存していた変更操作とロックを削除してCoordinator chainに完了済みを示す`PacketCommitAcknowledgement`を送信する
 
 
 **故障耐性について**
@@ -363,7 +363,7 @@ Simple commit protocolは、Participantの数に対する制約があるAtomic c
     - Aは`MsgInitiate`で指定されたContract関数をPrepare実行する。
 
 
-    - 実行に成功した場合、State storeに対しての変更についてのロックを取得する。このロックメカニズムの詳細は、[State storeとLocking mechanism](#state-storeとlocking-mechanism)の章で説明している。その後、BのContract関数の呼び出し情報を含む、Packet `PacketDataCall`を作成しBとのChannelに送信する。
+    - 実行に成功した場合、State storeに対しての変更操作の保存と変更対象へのロックを取得する。2PCと同様にここのロックメカニズムの詳細は、[State storeとLocking mechanism](#state-storeとlocking-mechanism)の章で説明している。その後、BのContract関数の呼び出し情報を含む、Packet `PacketDataCall`を作成しBとのChannelに送信する。
 
 
     - 実行に失敗した場合、このTransactionの処理をAbortして終了する。
@@ -374,19 +374,19 @@ Simple commit protocolは、Participantの数に対する制約があるAtomic c
 
     - Bは`PacketDataCall`を受け取り、指定されたContract関数を実行する。
     
-    - 実行に成功した場合、Commitを行う。その後、`PacketCallAcknowledgement`にstatusとして`COMMIT_OK`をセットして、AとのChannelに送信する。
+    - 実行に成功した場合、Commitを行う。その後、`PacketCallAcknowledgement`に`Status`として`COMMIT_OK`をセットして、AとのChannelに送信する。
     
-    - 実行に失敗した場合、Abortを行う。その後、`PacketCallAcknowledgement`にstatusとして`COMMIT_FAILED`をセットして、AとのChannelに送信する。
+    - 実行に失敗した場合、Abortを行う。その後、`PacketCallAcknowledgement`に`Status`として`COMMIT_FAILED`をセットして、AとのChannelに送信する。
 
 
 4. Commit(A)
 
 
-    - Aは`PacketCallAcknowledgement`を受け取り、そのstatusを確認する。
-    
-    - statusが`COMMIT_OK`の場合、AはPrepare時の操作をCommitする。
-    
-    - statusが`COMMIT_FAILED`の場合、AはPrepare時の操作を破棄してAbortする。
+    - Aは`PacketCallAcknowledgement`を受け取り、その`Status`を確認する。
+
+    - `Status`が`COMMIT_OK`の場合、AはPrepare時に保存していた変更操作をState storeに適用し、ロックを削除する。
+
+    - `Status`が`COMMIT_FAILED`の場合、AはPrepare時に保存していた変更操作を破棄し、ロックを削除する。
 
 
 
