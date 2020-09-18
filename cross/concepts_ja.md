@@ -296,21 +296,22 @@ Cross Frameworkでは、現在、Simple commit protocol, Two-phase commit protoc
 
 
     - 各Participant chainsは、`PacketPrepare`を受け取ると、[Cross-chain-transactionの作成と検証](#cross-chain-transactionの作成と検証)の章で説明したContractTransactionで指定されるContract関数を実行する(この際、実際にコミットはされないことに注意する)。
-    
-    - 実行に成功した場合、State storeに対しての変更についてのロックを取得する。このロックメカニズムの詳細は、[State storeとLocking mechanism](#state-storeとlocking-mechanism)の章で説明している。最後にPacket `PacketPrepareAcknowledgement`のStatusに成功を示す`PREPARE_RESULT_OK`をセットして返す
 
 
-    - 実行に失敗した場合、変更操作を破棄して、Packet `PacketPrepareAcknowledgement` の`Status`に失敗を示す`PREPARE_RESULT_FAILED`をセットして返す
+    - 実行に成功した場合、State storeに対しての変更についてのロックを取得する。このロックメカニズムの詳細は、[State storeとLocking mechanism](#state-storeとlocking-mechanism)の章で説明している。最後にACK `PacketPrepareAcknowledgement`のStatusに成功を示す`PREPARE_RESULT_OK`をセットして返す
+
+
+    - 実行に失敗した場合、変更操作を破棄して、ACK `PacketPrepareAcknowledgement` の`Status`に失敗を示す`PREPARE_RESULT_FAILED`をセットして返す
 
 
 
 3. Confirm step
 
 
-    - Coordinator chainは、Prepare stepにおいて各Participant chainが送信する`PacketPrepareAcknowledgement`を受け取る。各ACKの処理については、以下のような状態遷移を行う
-        1. ACKを待っている
-        2. 受信したACKの`Status`が”OK”かつ未受信のACKがある場合、1.に遷移する。すべて受信した場合、Commit要求をするためにCommit stepに進む
-        3. 受信したACKの`Status`が”Failed”の場合、Abort要求をするためにCommit stepに進む
+    - Coordinator chainは、Prepare stepにおいて各Participant chainが送信するACK `PacketPrepareAcknowledgement`を受け取る。各ACKの処理については、以下のような状態遷移を行う
+        1. 次のACKの受信待ち
+        2. 受信したACKの`Status`が`PREPARE_RESULT_OK`かつ未受信のACKがある場合、1.に遷移する。すべて受信した場合、各Participant chainにCommit要求をするためにCommit stepに進む
+        3. 受信したACKの`Status`が`PREPARE_RESULT_FAILED`の場合、各Participant chainにAbort要求をするためにCommit stepに進む
 
 
 
