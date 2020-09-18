@@ -7,7 +7,7 @@ Cross Frameworkは、複数の異なるBlockchainに分散したデータの参�
 
 ## Smart contract
 
-Smart contractとは、Blockchainの状態遷移を定義したものである。ユーザが生成したTransactionによって実行され、新たな状態へ更新を行う。EthereumやHyperledger fabricなど多くのブロックチェーンにおいて、単一のChain or Channelの処理を行うトランザクションのみがサポートされており、他のブロックチェーンとのInteroperabilityは考慮されていないものが多い。
+Smart contractとは、Blockchain上で実行可能なプログラムである。それらは状態をもち、多くの場合提供される機能は関数として公開され、定められた条件に従い実行可能である。ユーザが生成したTransactionによって実行され、状態の更新を行う。EthereumやHyperledger fabricなど多くのブロックチェーンにおいて、単一のChain or Channelの処理を行うトランザクションのみがサポートされており、他のブロックチェーンとのInteroperabilityは考慮されていないものが多い。
 
 Smart contractの記述言語は、ブロックチェーンやDLTごとに様々なものがサポートされており、Cross Frameworkにおいては現在Go言語のサポートがされている。
 
@@ -98,8 +98,6 @@ Cross Frameworkは、各ブロックチェーンの実装に依存しない機�
 
 
 ## Smart contract
-
-Smart contractとは、Blockchainの状態遷移を定義したものである。ユーザがリクエストしたTransactionによって実行され、新たな状態へ更新を行う。
 
 Cross Frameworkにおいて、Smart contractは、開発者がリクエストに応じて動的にコントラクトを呼び出し可能となるようなContract Handlerの実装によりもたらされる。それぞれの機能はContract関数として定義される。Cross-chain smart contractは、この複数のchainのContract関数の呼び出しを含むSmart contractを指す。また、これにより定義されたSmart contractのContract関数は、通常の単一chainでの実行と後述するCross-chain Transactionによる実行の両方で同じプログラムが実行される。
 
