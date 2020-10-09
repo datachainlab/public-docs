@@ -93,19 +93,19 @@ Fabric-IBCでは、Stateの検証をする際に、後述するEndorsed Commitme
 対象のBlockchain上に保持される個別のConnectionStateへのProofを検証する。
 
 #### verifyChannelState
-対象のBlockchain上に保持される個別のChannelStateへのProofを検証する。
+対象のBlockchain上に保持される個別のIBC ChannelStateへのProofを検証する。
 
 #### verifyPacketData
-特定のChannel、Port、Sequence時点で発信されるPacketへのProofを検証する。
+特定のIBC Channel、Port、Sequence時点で発信されるPacketへのProofを検証する。
 
 #### verifyPacketAcknowledgement
-特定のChannel、Port、Sequence時点で受信されるPacket AckへのProofを検証する。
+特定のIBC Channel、Port、Sequence時点で受信されるPacket AckへのProofを検証する。
 
 #### verifyPacketAcknowledgementAbsence
-特定のChannel、Port、Sequence時点で受信されるべきPacket Ackが欠けていることへのProofを検証する。
+特定のIBC Channel、Port、Sequence時点で受信されるべきPacket Ackが欠けていることへのProofを検証する。
 
 #### verifyNextSequenceRecv
-特定のChannel、Portで受信されるべき次のSequenceに対するProofを検証する。
+特定のIBC Channel、Portで受信されるべき次のSequenceに対するProofを検証する。
 
 Fabric-IBCでの詳細については以下を参照のこと。
 [State Verification Functions](05_fabric-client-spec_ja.md#state-verification-functions) 
@@ -125,8 +125,10 @@ Endorsed Commitmentの詳細については、以下を参照のこと。
 
 ## Connection, Channel
 
-Connectionは[ICS-03](https://github.com/cosmos/ics/tree/master/spec/ics-003-connection-semantics)、Channelは[ICS-04](https://github.com/cosmos/ics/tree/master/spec/ics-004-channel-and-packet-semantics)で定義される。
+IBCにおいて、Connectionは[ICS-03](https://github.com/cosmos/ics/tree/master/spec/ics-003-connection-semantics)、Channelは[ICS-04](https://github.com/cosmos/ics/tree/master/spec/ics-004-channel-and-packet-semantics)で定義される。
+
 Connectionは、IBCで通信する2つのBlockchain上でそれぞれが持つ状態で、Clientと関連付けて利用される。Blockchain間で通信するには、Connectionを確立する必要がある。
+
 Channelは、Connectionを利用して、2つのBlockchain上の各Module間でMessageが配送されるためのセマンティクスを提供する。
 それぞれの詳細については各ICSを参照のこと。
 
@@ -139,7 +141,7 @@ Connection、Channelが開かれるまでのフロー図は以下を参照のこ
 ## Packet
 
 [ICS-04](https://github.com/cosmos/ics/tree/master/spec/ics-004-channel-and-packet-semantics)で定義される。
-RelayerがBlockchain間でrelayするための情報として、送信元、宛先双方で使用するchannelやportの情報とdata等を持つ。dataは、個別のModuleに実装されたロジックによって規定される。
+RelayerがBlockchain間でrelayするための情報として、送信元、宛先双方で使用するIBC ChannelやPortの情報とdata等を持つ。dataは、個別のModuleに実装されたロジックによって規定される。
 
 ## Relayer
 

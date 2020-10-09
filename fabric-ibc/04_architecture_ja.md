@@ -27,7 +27,7 @@ Fabric CAの状態に変更があった場合、最新の状態をUpdateClient�
 
 [Connection, Channel](03_ibc_ja.md#connection-channel)にもあるように、Fabric-IBCでのConnection、Channelの状態遷移モデルはIBCに従う。一方、それぞれのフローではEndorsed Commitmentを用いた検証が必要となる。
 
-2つのApplication Channel間でConnectionとChannelが開かれるまでのフローを以下のシーケンス図で示す。
+2つのFabric Application Channel間でIBCのConnectionとChannelが開かれるまでのフローを以下のシーケンス図で示す。
 
 
 ![](https://paper-attachments.dropbox.com/s_9444F561751AA4885E4D884B1952F8ACD65F9552197DAF0081552C2C836D7B24_1596090739205_image.png)
@@ -40,7 +40,7 @@ Verifyから始まる検証系の関数については、[State Verification Fun
 
 ## Client更新のフロー
 
-2つのApplication Channel間でConnection、Channelが確立した後でのClient更新処理のフローをシーケンス図で示す。
+2つのFabric Application Channel間で、IBCのConnectionおよびChannelが確立した後での、Client更新処理のフローをシーケンス図で示す。
 ここではSequenceの更新を例に挙げるが、[Client](03_ibc_ja.md#client)が保持する状態の更新に伴って行われる処理である。IBC Policyの更新などでも必要となる。
 
 ![](https://paper-attachments.dropbox.com/s_9444F561751AA4885E4D884B1952F8ACD65F9552197DAF0081552C2C836D7B24_1596193073632_image.png)
@@ -48,9 +48,9 @@ Verifyから始まる検証系の関数については、[State Verification Fun
 
 ## Endorsed Commitment の作成と検証
 
-Fabric-IBCではあるApplication Channel上のChaincodeのStateにキー/値ペアが存在しているというCommitmentへのProofとして、[Endorsed Commitment](03_ibc_ja.md#endorsed-commitment)を用いる。
+Fabric-IBCではあるFabric Application Channel上のChaincodeのStateにキー/値ペアが存在しているというCommitmentへのProofとして、[Endorsed Commitment](03_ibc_ja.md#endorsed-commitment)を用いる。
 
-例として、2つの異なるApplication Channelがあるとき、一方(Channel1とする)上のStateに対してCommitment Proofを要求した後、他方(Channel2とする)でそのStateの検証を行う流れを、PacketCommitmentに関するシーケンス図で示す。
+例として、2つの異なるFabirc Application Channelがあるとき、一方(Channel1とする)上のStateに対してCommitment Proofを要求した後、他方(Channel2とする)でそのStateの検証を行う流れを、PacketCommitmentに関するシーケンス図で示す。
 
 ![](https://paper-attachments.dropbox.com/s_DAFCB926FADC8E47B8C76636D08E99EB63AB4DB6416B0C3DD9C48F433DE02567_1595848602931_image.png)
 

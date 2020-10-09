@@ -321,7 +321,7 @@ func (cs ClientState) VerifyChannelState(
 
 ### VerifyPacketCommitment
 
-特定のChannel、Port、Sequence時点で発信されるPacketへのProofを検証する。
+特定のIBC Channel、Port、Sequence時点で発信されるPacketへのProofを検証する。
 
 ```go
 // VerifyPacketCommitment verifies a proof of an outgoing packet commitment at
@@ -354,7 +354,7 @@ func (cs ClientState) VerifyPacketCommitment(
 
 ### VerifyPacketAcknowledgement
 
-特定のChannel、Port、Sequence時点で受信されるPacket AckへのProofを検証する。
+特定のIBC Channel、Port、Sequence時点で受信されるPacket AckへのProofを検証する。
 
 ```go
 // VerifyPacketAcknowledgement verifies a proof of an incoming packet
@@ -388,7 +388,7 @@ func (cs ClientState) VerifyPacketAcknowledgement(
 
 ### VerifyPacketAcknowledgementAbsence
 
-特定のChannel、Port、Sequence時点で受信されるべきPacket Ackが欠けていることへのProofを検証する。
+特定のIBC Channel、Port、Sequence時点で受信されるべきPacket Ackが欠けていることへのProofを検証する。
 
 ```go
 // VerifyPacketAcknowledgementAbsence verifies a proof of the absence of an
@@ -421,7 +421,7 @@ func (cs ClientState) VerifyPacketAcknowledgementAbsence(
 
 ### VerifyNextSequenceRecv
 
-特定のChannel、Portで受信されるべき次のSequenceに対するProofを検証する。
+特定のIBC Channel、Portで受信されるべき次のSequenceに対するProofを検証する。
 
 ```go
 // VerifyNextSequenceRecv verifies a proof of the next sequence number to be
