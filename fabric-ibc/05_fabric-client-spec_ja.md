@@ -23,7 +23,7 @@ type ConsensusState struct {
 }
 ```
 
-Fabric clientは、EndorserがIBC chaincode上で管理するSequenceとTimestampをtrackする。
+ConsensusStateは、EndorserがIBC chaincode上で管理するSequenceとTimestampをtrackする。
 
 
 ## Header
