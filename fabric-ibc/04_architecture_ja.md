@@ -1,5 +1,13 @@
 # Architecture
 
+Fabric-IBCは独自のApp(IBCApp)を提供し、通常のCosmos SDKアプリケーションと同様に、Cosmos SDKのmoduleを利用することができる。開発者はビジネスロジックなどをmoduleとして実装でき、それらはFabric-IBCが提供するApp、MultiStoreを介してChaincodeとして実行される。
+
+Txが提出されると、IBCAppにstubとTxが渡される。IBCAppはTxを実行し結果をMultiStoreに書き込む。
+IBCAppがHyperledger FabricのState Databaseに対して操作を行えるように、Fabric-IBCはstub APIを用いるMultiStoreを提供する。
+また、IBCAppはCosmos SDKのquery services経由でクエリするためのクエリメソッドを提供する。
+
+![](img/fabric_ibc_layer.png)
+
 ## ユーザ操作からの関連コンポーネント間フロー図
 
 あるFabricネットワーク上のApplication Channel上で動作するChaincodeに対して、ユーザが更新処理を要求した際、その結果が別のFabricネットワーク上へ伝播する際のコンポーネント間のフローを整理する。
@@ -52,16 +60,17 @@ Fabric-IBCではあるFabric Application Channel上のChaincodeのStateにキー
 
 例として、2つの異なるFabirc Application Channelがあるとき、一方(Channel1とする)上のStateに対してCommitment Proofを要求した後、他方(Channel2とする)でそのStateの検証を行う流れを、PacketCommitmentに関するシーケンス図で示す。
 
-![](https://paper-attachments.dropbox.com/s_DAFCB926FADC8E47B8C76636D08E99EB63AB4DB6416B0C3DD9C48F433DE02567_1595848602931_image.png)
-
+![](./img/endorsed_commitment_sequence.png)
 
 注意: 上図の灰色で覆われた領域(Chaincode)内の処理は1つのPeer上で起こる処理であり、内部のコンポーネント間ではネットワーク通信を伴わない。
 
 Relayerはこの後、Channel2からChannel1に対して同様の手順でPacketAcknowledgementをrelayすることになる。
 
-**HandleIBCTx**
+### HandleTx
+
 Chaincode内のメソッドとして定義される。Msgを受け取り、初期化したIBC Appインスタンスに渡す。その後IBC Appの処理結果が正常であればそこに含まれるEventをFabricの[Event API](https://hyperledger-fabric.readthedocs.io/en/release-2.2/developapps/transactioncontext.html#stub)経由でResponseに含める。
 
-**Msg**
+### Msg
+
 Stateの更新を目的として、各Moduleで定義されるオブジェクト。
 IBC Appによってroutingされる。

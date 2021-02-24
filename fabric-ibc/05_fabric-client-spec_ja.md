@@ -4,11 +4,39 @@ Fabric-clientは、[ICS-02](https://github.com/cosmos/ics/tree/master/spec/ics-0
 
 ## ClientState
 
-```go
-type ClientState struct {
-    ID                  string          `json:"id" yaml:"id"`
-    LastChaincodeHeader ChaincodeHeader `json:"last_chaincode_header" yaml:"last_chaincode_header"`
-    LastChaincodeInfo   ChaincodeInfo   `json:"last_chaincode_info" yaml:"last_chaincode_info"`
+```typescript
+interface ClientState {
+  id: string
+  chaincodeHeader: ChaincodeHeader
+  ibcPolicy: Policy
+  chaincodeInfo: ChaincodeInfo
+  mspInfos: MSPInfos
+}
+
+interface ChaincodeHeader {
+  sequence: commitment.Sequence // Value & Timestamp
+}
+
+interface ChaincodeInfo {
+  channelId: string
+  chaincodeId: ChaincodeID
+  endorsementPolicy: []byte
+}
+
+interface Policy {
+  policy: []byte
+  sequence: uint64
+}
+
+interface MSPInfos {
+ infos: []MSPInfo
+}
+
+interface MSPInfo {
+  mspID: string // unique for its ClientState
+  config: []byte // proto.Marshal(msppb.MSPConfig)
+  policy: Policy
+  frozen: bool // avoid reusing ID after deletion
 }
 ```
 
@@ -16,56 +44,85 @@ ClientStateは、Endorsement policy, ChaincodeのIDおよびVersionをtrackす�
 
 ## ConsensusState
 
-```go
-type ConsensusState struct {
-    Timestamp time.Time
-    Height    uint64
+```typescript
+interface ConsensusState {
+  timestamp: int64
 }
 ```
 
-ConsensusStateは、EndorserがIBC chaincode上で管理するSequenceとTimestampをtrackする。
+ConsensusStateは、EndorserがIBC chaincode上で管理するTimestampをtrackする。
 
 
 ## Header
 
 HeaderはChaincodeHeaderとChaincodeInfoのいずれか、もしくは両方を含む。
 
-```go
-type Header struct {
-    ChaincodeHeader *ChaincodeHeader `protobuf:"bytes,1,opt,name=ChaincodeHeader,proto3" json:"ChaincodeHeader,omitempty"`
-    ChaincodeInfo   *ChaincodeInfo   `protobuf:"bytes,2,opt,name=ChaincodeInfo,proto3" json:"ChaincodeInfo,omitempty"`
+```typescript
+interface Header {
+  chaincodeHeader: Maybe<ChaincodeHeader>
+  ibcPolicy: Maybe<PolicyHeader>
+  chaincodeInfo: Maybe<ChaincodeInfoHeader>
+  mspInfoHeaders: Maybe<MSPInfoHeaders>
 }
 
-type ChaincodeHeader struct {
-    Sequence commitment.Sequence `protobuf:"bytes,1,opt,name=sequence,proto3" json:"sequence"`
-    Proof    CommitmentProof     `protobuf:"bytes,2,opt,name=proof,proto3" json:"proof"`
+interface ChaincodeHeader {
+  sequence: commitment.Sequence // contains Value, Timestamp
+  proof: CommitmentProof
 }
 
-type Sequence struct {
-    Value     uint64 `protobuf:"varint,1,opt,name=value,proto3" json:"value"`
-    Timestamp int64  `protobuf:"varint,2,opt,name=timestamp,proto3" json:"timestamp"`
+interface PolicyHeader {
+  policy: Policy
+  proof: MessageProof
 }
 
-type ChaincodeInfo struct {
-    ChannelId         string        `protobuf:"bytes,1,opt,name=channel_id,json=channelId,proto3" json:"channel_id,omitempty"`
-    ChaincodeId       ChaincodeID   `protobuf:"bytes,2,opt,name=chaincode_id,json=chaincodeId,proto3" json:"chaincode_id"`
-    EndorsementPolicy []byte        `protobuf:"bytes,3,opt,name=endorsement_policy,json=endorsementPolicy,proto3" json:"endorsement_policy,omitempty"`
-    IbcPolicy         []byte        `protobuf:"bytes,4,opt,name=ibc_policy,json=ibcPolicy,proto3" json:"ibc_policy,omitempty"`
-    Proof             *MessageProof `protobuf:"bytes,5,opt,name=proof,proto3" json:"proof,omitempty"`
+interface ChaincodeInfoHeader {
+  channelId: string
+  chaincodeId: ChaincodeID
+  endorsementPolicy: []byte
+  ibcPolicySequence: uint64
+  proof: MessageProof
 }
+
+interface MSPInfoHeaders {
+  headers: []MSPInfoHeader
+}
+
+type MSPInfoHeaderType = "Create" | "UpdatePolicy" | "UpdateConfig" | "Freeze"
+
+interface MSPInfoHeader {
+  type: MspInfoHeaderType
+  mspID: string
+  config: []byte // proto.Marshal(msppb.MSPConfig)
+  // when type is "UpdateConfig", policy.Sequence must be needed.
+  policy: Maybe<Policy>
+  ibcPolicySequence: uint64
+  proof: MessageProof
+}
+
 ```
 
 ### ChaincodeHeader.Proof
 
 ConsensusState内のSequeneを更新するために必要となる、fabric clientによる提案の結果への証明。含まれる署名は、ClientStateが保持するEndorsement Policyを満たす必要がある。
 
-```go
-type CommitmentProof struct {
-    Proposal      []byte   `protobuf:"bytes,1,opt,name=proposal,proto3" json:"proposal,omitempty"`
-    NsIndex       uint32   `protobuf:"varint,2,opt,name=ns_index,json=nsIndex,proto3" json:"ns_index,omitempty"`
-    WriteSetIndex uint32   `protobuf:"varint,3,opt,name=write_set_index,json=writeSetIndex,proto3" json:"write_set_index,omitempty"`
-    Identities    [][]byte `protobuf:"bytes,4,rep,name=identities,proto3" json:"identities,omitempty"`
-    Signatures    [][]byte `protobuf:"bytes,5,rep,name=signatures,proto3" json:"signatures,omitempty"`
+```typescript
+interface CommitmentProof {
+  proposal: []byte
+  nsIndex: uint32
+  writeSetIndex: uint32
+  identities: [][]byte
+  signatures: [][]byte
+}
+```
+
+### PolicyHeader.Proof
+
+ClientState内のIBC Policyを更新するために必要となる、IBC Policyへの証明。含まれる署名は、ClientStateが保持するIBC Policyを満たす必要がある。
+
+```typescript
+interface MessageProof {
+  identities: [][]byte
+  signatures: [][]byte
 }
 ```
 
@@ -73,61 +130,84 @@ type CommitmentProof struct {
 
 ClientState内のChaincodeInfoを更新するために必要となる、ChaincodeInfoへの証明。含まれる署名は、ClientStateが保持するIBC Policyを満たす必要がある。
 
-```go
-type MessageProof struct {
-    Identities [][]byte `protobuf:"bytes,1,rep,name=identities,proto3" json:"identities,omitempty"`
-    Signatures [][]byte `protobuf:"bytes,2,rep,name=signatures,proto3" json:"signatures,omitempty"`
+PolicyHeader.Proofと同様、MessageProofを用いる。
+
+## Misbehaviour
+
+Fabric-IBCにおけるMisbehaviourは、ClientStateが持つ各Sequenceに関して同一Sequence値での異なる2つのProof、
+あるいは各State検証時のEndorsed Commitmentに関して同一キーに対する異なる値を示す2つのProofによって構成される。
+
+```typescript
+type Misbehaviour = MisbehaviourSubHeader | MisbehaviourEndorsedCommitment
+
+type SubHeader = ChaincodeHeader | PolicyHeader | ChaincodeInfoHeader | MSPInfoHeader
+
+type SequenceType = "ChaincodeHeader" | "IbcPolicy" | "MSPInfo"
+
+type StateType =
+  | "ClientConsensusState" | "ConnectionState" | "ChannelState"
+  | "PacketCommitment" | "PacketAcknowledgement" | "PacketAcknowledgementAbsense"
+  | "NextSequenceRecv"
+
+interface MisbehaviourSubHeader {
+  sequence: uint64
+  sequenceType: SequenceType
+  h1: SubHeader
+  h2: SubHeader
+}
+
+interface MisbehaviourEndorsedCommitment {
+  key: string
+  stateType: StateType
+  p1: CommitmentProof
+  p2: CommitmentProof
 }
 ```
+
+### Sequence値の更新について
+
+
+Signの順序を決定的にする必要があり、またProofに用いている各Signatureを再利用できないようにする必要がある。
+
+Sequence値はCreateClient時点で初期化され、以降Sequence値が紐づく状態を参照して他の状態更新を行う場合にインクリメントされる。
+
+| 更新順序 | 更新対象             | 更新されるClientState上のSequence値                       | 備考                                |
+| ---- | ---------------- | ------------------------------------------------- | --------------------------------- |
+| 0    | chaincodeHeader  | chaincodeHeader.sequence
+| 1    | ibcPolicy.policy | ibcPolicy.sequence                            |                                   |
+| 2    | chaincodeInfo    | ibcPolicy.sequence                            |                                   |
+| 3    | mspInfoHeader.policy | ibcPolicy.sequence                            | mspInfoHeaders内の各MSPの更新順序はMSPIDの昇順となる |
+| 3    | mspInfoHeader.config | mspInfoHeaders[i].policy.sequence (iは該当MSPのindex) | mspInfoHeaders内の各MSPの更新順序はMSPIDの昇順となる |
+
+1つのHeaderに複数のSubHeaderの更新が含まれている場合、各更新に対するProof内のSequence値はそれぞれ+1される必要がある。
 
 ## Validity predicate
 
 この関数は、与えられたHeaderが現在登録されているEndorsement policyに従ってHeaderに各署名がついていることを確認する。
 
-```go
-func checkValidity(
-    clientState types.ClientState, header types.Header, currentTimestamp time.Time,
-) error {
-    if header.ChaincodeHeader == nil && header.ChaincodeInfo == nil {
-        return errors.New("either ChaincodeHeader or ChaincodeInfo must be non-nil value")
-    }
-    if header.ChaincodeHeader != nil {
-        // assert header timestamp is past latest clientstate timestamp
-        if header.ChaincodeHeader.Timestamp.UnixNano() <= clientState.GetLatestTimestamp().UnixNano() {
-            return sdkerrors.Wrapf(
-                clienttypes.ErrInvalidHeader,
-                "header blocktime ≤ latest client state block time (%s ≤ %s)",
-                header.ChaincodeHeader.Timestamp.String(), clientState.GetLatestTimestamp().String(),
-            )
-        }
-        if header.ChaincodeHeader.Sequence != int64(clientState.GetLatestHeight()+1) {
-            return sdkerrors.Wrapf(
-                clienttypes.ErrInvalidHeader,
-                "header sequence != expected client state sequence (%d != %d)", header.ChaincodeHeader.Sequence, clientState.GetLatestHeight()+1,
-            )
-        }
-        if err := types.VerifyChaincodeHeader(clientState, *header.ChaincodeHeader); err != nil {
-            return sdkerrors.Wrap(
-                clienttypes.ErrInvalidHeader,
-                err.Error(),
-            )
-        }
-    }
-    if header.ChaincodeInfo != nil {
-        if len(header.ChaincodeInfo.PolicyBytes) == 0 {
-            return sdkerrors.Wrapf(
-                clienttypes.ErrInvalidHeader,
-                "ChaincodeInfo.PolicyBytes must be non-empty value",
-            )
-        }
-        if err := types.VerifyChaincodeInfo(clientState, *header.ChaincodeInfo); err != nil {
-            return sdkerrors.Wrap(
-                clienttypes.ErrInvalidHeader,
-                err.Error(),
-            )
-        }
-    }
-    return nil
+```typescript
+function checkValidity(clientState: ClientState, header: Header) {
+  assert(header.chaincodeHeader != null || header.ibcPolicy != null || header.chaincodeInfo != null || header.MSPHeaders != null)
+  if header.chaincodeHeader != null {
+    assert(header.chaincodeHeader.sequence.timestamp > clientState.GetLatestTimestamp())
+    h := clienttypes.NewHeight(0, header.chaincodeHeader.sequence.value)
+    lh := clientState.GetLatestHeight()
+    assert(h.EQ(clienttypes.NewHeight(lh.GetVersionNumber(), lh.GetVersionHeight()+1)))
+    assert(verifyChaincodeHeader(clientState, header.chaincodeHeader)
+  }
+
+  if header.ibcPolicy != null {
+    assert(verifyPolicyHeader(clientState, header.ibcPolicy))
+  }
+
+  if header.chaincodeInfo != null {
+    assert(len(header.chaincodeInfo.endorsementPolicy) > 0)
+    assert(verifyChaincodeInfo(clientState, header.chaincodeInfo))
+  }
+
+  if header.MSPHeaders != null {
+    assert(verifyMSPHeaders(clientState, header.mspHeaders))
+  }
 }
 ```
 
@@ -138,36 +218,42 @@ HeaderにはChaincodeHeaderとChaincodeInfoのいずれかもしくは両方の�
 
 ChaincodeHeaderをWriteSetに含むProposalResponseに対して、現在登録されているEndorsement policyに従ってsignされていることを確認する。
 
-```go
-// VerifyChaincodeHeader verifies ChaincodeHeader with last Endorsement Policy
-func VerifyChaincodeHeader(clientState ClientState, h ChaincodeHeader) error {
-    lastci := clientState.LastChaincodeInfo
-    ok, err := VerifyEndorsedCommitment(clientState.LastChaincodeInfo.GetFabricChaincodeID(), lastci.EndorsementPolicy, h.Proof, MakeSequenceCommitmentEntryKey(h.Sequence.Value), h.Sequence.Bytes())
-    if err != nil {
-        return err
-    } else if !ok {
-        return errors.New("failed to verify a endorsed commitment")
-    }
-    return nil
+```typescript
+function verifyChaincodeHeader(clientState: ClientState, h: ChaincodeHeader) {
+  configs = getConfigs(clientState.mspInfos)
+  lastci = clientState.chaincodeInfo
+  assert(verifyEndorsedCommitment(clientState.chaincodeInfo.GetFabricChaincodeID(), lastci.endorsementPolicy, h.proof, MakeSequenceCommitmentEntryKey(h.sequence.value), h.sequence.Bytes(), configs))
 }
 
-// VerifyEndorsedCommitment verifies a key-value entry with a policy
-func VerifyEndorsedCommitment(ccID peer.ChaincodeID, policyBytes []byte, proof CommitmentProof, key string, value []byte) (bool, error) {
-    policy, err := getPolicyEvaluator(policyBytes, GetConfig())
-    if err != nil {
-        return false, err
-    }
-    if err := policy.EvaluateSignedData(proof.ToSignedData()); err != nil {
-        return false, err
-    }
-    id, rwset, err := getTxReadWriteSetFromProposalResponsePayload(proof.Proposal)
-    if err != nil {
-        return false, err
-    }
-    if !equalChaincodeID(ccID, *id) {
-        return false, fmt.Errorf("got unexpected chaincodeID: expected=%v actual=%v", ccID, *id)
-    }
-    return ensureWriteSetIncludesCommitment(rwset.NsRwSets, proof.NsIndex, proof.WriteSetIndex, key, value)
+// verifyEndorsedCommitment verifies a key-value entry with a policy
+function verifyEndorsedCommitment(ccID: ChaincodeID, policyBytes: []byte, proof: CommitmentProof, key: string, value: []byte, configs: []MSPPBConfig) {
+  policy = getPolicyEvaluator(policyBytes, configs)
+  assert(policy != null)
+  assert(policy.EvaluateSignedData(proof.ToSignedData()))
+
+  id, rwset = getTxReadWriteSetFromProposalResponsePayload(proof.Proposal)
+  assert(id != null || rwset != null)
+  assert(equalChaincodeID(ccID, id))
+  assert(ensureWriteSetIncludesCommitment(rwset.nsRwSets, proof.nsIndex, proof.writeSetIndex, key, value))
+}
+```
+
+### VerifyPolicyHeader
+
+PolicyHeaderをWriteSetに含むProposalResponseに対して、現在登録されているIBC policyに従ってsignされていることを確認する。
+
+```typescript
+function verifyPolicyHeader(clientState: ClientState, ph: PolicyHeader) {
+  assert(ph.policy.sequence == clientState.ibcPolicy.sequence + 1)
+  configs = getConfigs(clientState.mspInfos)
+  assert(verifyEndorsedMessage(clientState.ibcPolicy, ph.proof, ph.GetSignBytes(), configs))
+}
+
+// verifyEndorsedMessage verifies a value with given policy
+function verifyEndorsedMessage(policyBytes: []byte, proof: MessageProof, value: []byte, configs: []msppb.MSPConfig) {
+  policy = getPolicyEvaluator(policyBytes, configs)
+  sigs = makeSignedDataListWithMessageProof(proof, value)
+  assert(policy.EvaluateSignedData(sigs))
 }
 ```
 
@@ -175,27 +261,80 @@ func VerifyEndorsedCommitment(ccID peer.ChaincodeID, policyBytes []byte, proof C
 
 現在登録されているIBC policyに従ってChaincodeInfoに対してsignされていることを確認する。
 
+```typescript
+function verifyChaincodeInfo(clientState: ClientState, info: ChaincodeInfoHeader) {
+  assert(cih.policy.sequence == clientState.ibcPolicy.sequence + 1)
+  configs = getConfigs(clientState.mspInfos)
+  assert(verifyEndorsedMessage(clientState.ibcPolicy, cih.proof, cih.GetSignBytes(), configs)
+}
+```
 
-```go
-// VerifyChaincodeInfo verifies ChaincodeInfo with last IBC Policy
-func VerifyChaincodeInfo(clientState ClientState, info ChaincodeInfo) error {
-    if info.Proof == nil {
-        return errors.New("a proof is empty")
-    }
-    return VerifyEndorsedMessage(clientState.LastChaincodeInfo.IbcPolicy, *info.Proof, info.GetSignBytes())
+### VerifyMSPInfoHeaders
+
+現在登録されている各MSPのMSPInfoに従って、PolicyやConfigの登録、更新に必要なsignが行われていることを確認する。
+
+
+```typescript
+// assume reqs are sorted and each entry is unique
+function verifyMSPInfoHeaders(clientState: ClientState, mihs: MSPInfoHeaders) {
+  for _, mih := range mihs.headers {
+  assert(verifyMSPInfoHeader(clientState, mih))
+  }
 }
 
-// VerifyEndorsedMessage verifies a value with given policy
-func VerifyEndorsedMessage(policyBytes []byte, proof MessageProof, value []byte) error {
-    policy, err := getPolicyEvaluator(policyBytes, GetConfig())
-    if err != nil {
-        return err
-    }
-    sigs := makeSignedDataListWithMessageProof(proof, value)
-    if err := policy.EvaluateSignedData(sigs); err != nil {
-        return err
-    }
-    return nil
+function verifyMSPInfoHeader(clientstate: ClientState, mih: MSPInfoHeader) {
+  switch mih.Type {
+  case "Create":
+    assert(verifyMSPCreate(clientState, mh))
+    break
+  case "UpdateConfig":
+    assert(verifyMSPUpdateConfig(clientState, mh))
+    break
+  case "UpdatePolicy":
+    assert(verifyMSPUpdatePolicy(clientState, mh))
+    break
+  case "Freeze":
+    assert(verifyMSPFreeze(clientState, mh))
+    break
+  default:
+    assert(false)
+  }
+}
+
+function verifyMSPCreate(clientState: ClientState, mh: MSPHeader) {
+  // error if already created
+
+  assert(mh.ibcPolicySequence == clientState.ibcPolicy.sequence + 1)
+  assert(mh.policy.sequence == 0)
+  assert(verifyMSPWithPolicy(clientState.ibcPolicy, mh))
+}
+
+function verifyMSPUpdatePolicy(clientState: ClientState, mh: MSPHeader) {
+  // error if not created yet
+
+  assert(mh.ibcPolicySequence == clientState.ibcPolicy.sequence + 1)
+  assert(verifyMSPWithPolicy(clientState.ibcPolicy, mh))
+}
+
+function verifyMSPUpdateConfig(clientState: ClientState, mh: MSPHeader) {
+  // error if not created yet
+
+  mi = findMSPInfo(clientState, mh.mspID)
+  assert(mi != null)
+  assert(mh.policy.sequence == mi.policy.sequence + 1)
+  assert(VerifyMSPWithPolicy(mi.policy, mh))
+}
+
+function verifyMSPFreeze(clientState: ClientState, mh: MSPHeader) {
+  // error if not created yet or already freezed
+
+  assert(mh.ibcPolicySequence == clientState.ibcPolicy.sequence + 1)
+  assert(VerifyMSPWithPolicy(clientState.ibcPolicy, mh))
+}
+
+function verifyMSPWithPolicy(policy: []byte, mh: MSPHeader) {
+  config = clientState.mspInfos
+  assert(verifyEndorsedMessage(policy, mh.Proof(), mh.GetSignBytes(), config))
 }
 ```
 
@@ -231,7 +370,7 @@ func (cs ClientState) VerifyClientConsensusState(
         return err
     }
     key := commitment.MakeConsensusStateCommitmentEntryKey(prefix, counterpartyClientIdentifier, consensusHeight)
-    if ok, err := VerifyEndorsement(cs.LastChaincodeInfo.GetFabricChaincodeID(), cs.LastChaincodeInfo.EndorsementPolicy, fabProof, key, bz); err != nil {
+    if ok, err := VerifyEndorsement(cs.ChaincodeInfo.GetFabricChaincodeID(), cs.ChaincodeInfo.EndorsementPolicy, fabProof, key, bz); err != nil {
         return err
     } else if !ok {
         return fmt.Errorf("unexpected value")
@@ -270,7 +409,7 @@ func (cs ClientState) VerifyConnectionState(
     if err != nil {
         return err
     }
-    if ok, err := VerifyEndorsement(cs.LastChaincodeInfo.GetFabricChaincodeID(), cs.LastChaincodeInfo.EndorsementPolicy, fabProof, key, bz); err != nil {
+    if ok, err := VerifyEndorsement(cs.ChaincodeInfo.GetFabricChaincodeID(), cs.ChaincodeInfo.EndorsementPolicy, fabProof, key, bz); err != nil {
         return err
     } else if !ok {
         return fmt.Errorf("unexpected value")
@@ -310,7 +449,7 @@ func (cs ClientState) VerifyChannelState(
     if err != nil {
         return err
     }
-    if ok, err := VerifyEndorsement(cs.LastChaincodeInfo.GetFabricChaincodeID(), cs.LastChaincodeInfo.EndorsementPolicy, fabProof, key, bz); err != nil {
+    if ok, err := VerifyEndorsement(cs.ChaincodeInfo.GetFabricChaincodeID(), cs.ChaincodeInfo.EndorsementPolicy, fabProof, key, bz); err != nil {
         return err
     } else if !ok {
         return fmt.Errorf("unexpected value")
@@ -343,7 +482,7 @@ func (cs ClientState) VerifyPacketCommitment(
         return err
     }
     key := commitment.MakePacketCommitmentEntryKey(prefix, portID, channelID, sequence)
-    if ok, err := VerifyEndorsement(cs.LastChaincodeInfo.GetFabricChaincodeID(), cs.LastChaincodeInfo.EndorsementPolicy, fabProof, key, commitmentBytes); err != nil {
+    if ok, err := VerifyEndorsement(cs.ChaincodeInfo.GetFabricChaincodeID(), cs.ChaincodeInfo.EndorsementPolicy, fabProof, key, commitmentBytes); err != nil {
         return err
     } else if !ok {
         return fmt.Errorf("unexpected value")
@@ -377,7 +516,7 @@ func (cs ClientState) VerifyPacketAcknowledgement(
     }
     key := commitment.MakePacketAcknowledgementEntryKey(prefix, portID, channelID, sequence)
     bz := channeltypes.CommitAcknowledgement(acknowledgement)
-    if ok, err := VerifyEndorsement(cs.LastChaincodeInfo.GetFabricChaincodeID(), cs.LastChaincodeInfo.EndorsementPolicy, fabProof, key, bz); err != nil {
+    if ok, err := VerifyEndorsement(cs.ChaincodeInfo.GetFabricChaincodeID(), cs.ChaincodeInfo.EndorsementPolicy, fabProof, key, bz); err != nil {
         return err
     } else if !ok {
         return fmt.Errorf("unexpected value")
@@ -410,7 +549,7 @@ func (cs ClientState) VerifyPacketAcknowledgementAbsence(
         return err
     }
     key := commitment.MakePacketAcknowledgementAbsenceEntryKey(prefix, portID, channelID, sequence)
-    if ok, err := VerifyEndorsement(cs.LastChaincodeInfo.GetFabricChaincodeID(), cs.LastChaincodeInfo.EndorsementPolicy, fabProof, key, []byte{}); err != nil {
+    if ok, err := VerifyEndorsement(cs.ChaincodeInfo.GetFabricChaincodeID(), cs.ChaincodeInfo.EndorsementPolicy, fabProof, key, []byte{}); err != nil {
         return err
     } else if !ok {
         return fmt.Errorf("unexpected value")
@@ -443,11 +582,120 @@ func (cs ClientState) VerifyNextSequenceRecv(
     }
     key := commitment.MakeNextSequenceRecvEntryKey(prefix, portID, channelID)
     bz := sdk.Uint64ToBigEndian(nextSequenceRecv)
-    if ok, err := VerifyEndorsement(cs.LastChaincodeInfo.GetFabricChaincodeID(), cs.LastChaincodeInfo.EndorsementPolicy, fabProof, key, bz); err != nil {
+    if ok, err := VerifyEndorsement(cs.ChaincodeInfo.GetFabricChaincodeID(), cs.ChaincodeInfo.EndorsementPolicy, fabProof, key, bz); err != nil {
         return err
     } else if !ok {
         return fmt.Errorf("unexpected value")
     }
     return nil
+}
+```
+
+## Misbehaviour Predicate
+
+この関数は、与えられた2つのSubHeaderが現在のClientStateに対してコンセンサス障害があることを確認する。
+
+Misbehaviourの確認後にClientを凍結状態にするかどうかについては、Hyperledger FabricがEnterprise向けに用いられていることなどを踏まえて、今後さらに検討する。
+
+```typescript
+function checkMisbehaviourAndUpdateState(clientState: ClientState, misbehaviour: Misbehaviour) {
+  switch (typeof misbehaviour) {
+    case "MisbehaviourSubHeader":
+      checkMisbehaviourSubHeaderAndUpdateState(clientState, misbehaviour)
+      break
+    case "MisbehaviourEndorsedCommitment":
+      checkMisbehaviourEndorsedCommitmentAndUpdateState(clientState, misbehaviour)
+      break
+    default:
+      assert(false)
+      break
+  }
+}
+
+function checkMisbehaviourSubHeaderAndUpdateState(clientState: ClientState, misbehaviour: MisbehaviourSubHeader) {
+  switch (misbehaviour.sequenceType) {
+    case "ChaincodeHeader":
+      checkMisbehaviourForChaincodeHeaderSequence(clientState, misbehaviour)
+      // clientState.frozen = true
+      break
+    case "IbcPolicy":
+      checkMisbehaviourForPolicySequence(clientState, misbehaviour)
+      // clientState.frozen = true
+      break
+    case "MSPInfo":
+      checkMisbehaviourForMSPInfoHeaderSequence(clientState, misbehaviour)
+      // clientState.mspInfos[misbehaviour.mspID].froozen = true
+      break
+    default:
+      assert(false)
+      break
+  }
+  // set("clients/{identifier}", clientState)
+}
+
+function checkMisbehaviourEndorsedCommitmentAndUpdateState(
+  clientState: ClientState, misbehaviour: MisbehaviourEndorsedCommitment) {
+  // TODO: detect contradiction about state transition in misbehaviour
+}
+
+function checkMisbehaviourForChaincodeHeaderSequence(clientState: ClientState, misbehaviour: MisbehaviourSubHeader) {
+  assert(typeof misbehaviour.h1 == "ChaincodeHeader")
+  assert(typeof misbehaviour.h2 == "ChaincodeHeader")
+  ch1 = misbehaviour.h1 as ChaincodeHeader
+  ch2 = misbehaviour.h2 as ChaincodeHeader
+  assert(misbehaviour.sequence == ch1.sequence.value)
+  assert(ch1.sequence == ch2.sequence)
+
+  assert(ch1.proof.nsIndex == ch2.proof.nsIndex)
+  assert(ch1.proof.writeSetIndex == ch2.proof.writeSetIndex)
+  assert(ch1.proof.proposal != ch2.proof.proposal)
+  assert(ch1.proof.signatures != ch2.proof.signatures)
+
+  assert(verifyChaincodeHeader(clientState, ch1))
+  assert(verifyChaincodeHeader(clientState, ch2))
+}
+
+function checkMisbeaviourForPolicySequence(clientState: ClientState, misbehaviour: MisbehaviourSubHeader) {
+  assert(misbehaviour.sequence == getSequence(misbehaviour.h1))
+  assert(getSequence(misbehaviour.h1) == getSequence(misbehaviour.h2))
+
+  assert(misbehaviour.h1.GetSignBytes() != misbehaviour.h2.GetSignBytes())
+
+  assert(verifySubHeader(clientState, misbehaviour.h1))
+  assert(verifySubHeader(clientState, misbehaviour.h2))
+}
+
+// check a misbehaviour on updating the config of a MSP
+function checkMisbehaviourForMSPInfoSequence(clientState: ClientState, misbehaviour: MisbehaviourSubHeader) {
+  assert(typeof misbehaviour.h1 == "MSPInfoHeader")
+  assert(typeof misbehaviour.h2 == "MSPInfoHeader")
+  mh1 = misbehaviour.h1 as MSPInfoHeader
+  mh2 = misbehaviour.h2 as MSPInfoHeader
+
+  assert(misbehaviour.sequence == mh1.policy.sequence)
+  assert(mh1.policy.sequence == mh2.policy.sequence)
+
+  assert(mh1.mspID == mh2.mspID)
+  assert(mh1.ibcPolicySequence == mh2.ibcPolicySequence)
+  assert(mh1.config != mh2.config)
+  assert(mh1.signatures != mh2.signatures)
+
+  assert(verifyMSPInfoHeader(clientState, mh1))
+  assert(verifyMSPInfoHeader(clientState, mh2))
+}
+
+function verifySubHeader(clientState: ClientState, subHeader: SubHeader) {
+  switch(typeof subHeader) {
+  case "ChaincodeHeader":
+    return verifyChaincodeHeader(clientState, subHeader)
+  case "PolicyHeader":
+    return verifyPolicyHeader(clientState, subHeader)
+  case "ChaincodeInfoHeader":
+    return verifyChaincodeInfoHeader(clientState, subHeader)
+  case "MSPInfoHeader":
+    return verifyMSPInfoHeader(clientState, subHeader)
+  default:
+    assert(false)
+  }
 }
 ```
