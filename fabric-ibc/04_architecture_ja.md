@@ -22,7 +22,7 @@ Chaincode instanceはこのAppを通してIBCの機能を提供する。
 
 ### Fabric IBC Modules
 
-Fabric clientが状態検証に必要とするProofやBlock headerを生成する機能を提供するchaincode群。
+Fabric clientが状態検証に必要とするProofやHeaderを生成する機能を提供するchaincode群。
 詳細については[Fabric IBC Modules](03_ibc_ja.md#fabric-ibc-modules)を参照。
 
 ### ConfigUpdater
