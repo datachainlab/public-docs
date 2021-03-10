@@ -20,9 +20,9 @@ Trusted third-party(TTP)とは、IBCを行う各Blockchainの信頼以外に必�
 
 ## 既存のChaincode実装との連携を容易にする
 
-IBCを利用したアプリケーションを開発するには、ユーザのアプリケーションロジックを実装したModuleを、Chaincode内のFabric-IBCにセットすることで可能となる。
+Fabric上でIBCに対応するChaincodeを実装したい開発者は、Fabric-IBCが提供するAppに対してユーザのアプリケーションロジックを実装したModuleを追加することで、IBCを利用したアプリケーションを開発することができる。
 
-Fabric上でIBCに対応するChaincodeを実装したい開発者は、既存のChaincode上のビジネスロジックやデータモデルを容易に移行できる。Fabric-IBCはそのために、Chaincode shim APIのwrapperを提供する。
+既存のChaincode上のビジネスロジックやデータモデルは容易に移行できる。Fabric-IBCはそのために、Chaincode shim APIのwrapperを提供する。
 
 ## 拡張性の高いアーキテクチャ
 
