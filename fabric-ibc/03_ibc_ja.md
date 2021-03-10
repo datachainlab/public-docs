@@ -49,7 +49,7 @@ Fabric-IBCでの定義については[ConsensusState](05_fabric-client-spec_ja.m
 
 ### ClientState
 
-ClientStateはあるBlock Heightで特定のキー/値ペアがState内に存在する、あるいは存在していないことのProofを検証するために用いられる。
+ClientStateはあるHeightで特定のキー/値ペアがState内に存在する、あるいは存在していないことのProofを検証するために用いられる。
 https://github.com/cosmos/ics/tree/master/spec/ics-002-client-semantics#clientstate
 
 Fabric-IBCでの定義については
@@ -75,9 +75,9 @@ ChaincodeHeaderをWriteSetに含むProposalResponseに対して、現在登録�
 
 #### VerifyChaincodeInfo
 現在登録されているIBC policyに従ってChaincodeInfoに対してsignされていることを確認する。
- 
+
  詳細については以下を参照のこと。
-[Validity Predicate](05_fabric-client-spec_ja.md#validity-predicate) 
+[Validity Predicate](05_fabric-client-spec_ja.md#validity-predicate)
 
 ### State Verification Function
 
@@ -108,7 +108,7 @@ Fabric-IBCでは、Stateの検証をする際に、後述するEndorsed Commitme
 特定のIBC Channel、Portで受信されるべき次のSequenceに対するProofを検証する。
 
 Fabric-IBCでの詳細については以下を参照のこと。
-[State Verification Functions](05_fabric-client-spec_ja.md#state-verification-functions) 
+[State Verification Functions](05_fabric-client-spec_ja.md#state-verification-functions)
 
 ### Endorsed Commitment
 
@@ -121,7 +121,7 @@ Endorsed Commitmentの検証は、Proposal Responseに対する署名が上記�
 Endorsed Commitmentを作成する用途として[Fabric IBC Modules](#fabric-ibc-modules)が提供される。
 
 Endorsed Commitmentの詳細については、以下を参照のこと。
-[Fabric Client Spec](05_fabric-client-spec_ja.md) 
+[Fabric Client Spec](05_fabric-client-spec_ja.md)
 
 ## Connection, Channel
 
@@ -179,11 +179,11 @@ RelayerはFabricのclient機能を有するサービスである。そのため�
 
 Fabric-IBCでは、Permissioned Blockchain上のStateを他のBlockchainにRelayするという点に関して、プライバシーの問題が起こり得る。これに関する整理は以下を参照のこと。
 
-[RelayerのPrivacyに関して](06_appendix_ja.md#relayerのprivacyに関して) 
+[RelayerのPrivacyに関して](06_appendix_ja.md#relayerのprivacyに関して)
 
 ## Fabric-IBC Modules
 
-Fabric clientが状態検証に必要とするProofやBlock headerを生成する機能を提供するChaincode群である。以下の2つが提供される。
+Fabric clientが状態検証に必要とするProofやHeaderを生成する機能を提供するChaincode群である。以下の2つが提供される。
 
 - Chaincode header generator
 - Endorsed commitment generator
