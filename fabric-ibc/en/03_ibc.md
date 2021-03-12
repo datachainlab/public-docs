@@ -134,7 +134,7 @@ See the respective ICS for details.
 In Fabric-IBC, the state transition models of Connection and Channel also follow IBC, while Endorsed Commitment is used for verification at each state transition.
 
 Please refer to the following flow chart for Connection and Channel establishment.
-[Connection, Channel establishment](04_architecture.md#connectionchannel establishment)
+[Connection, Channel establishment](04_architecture.md#connection-channel-establishment)
 
 ## Packet
 
@@ -177,7 +177,7 @@ The clientID, connectionID, channelID, port, etc. of both Chaincodes should be s
 
 In Fabric-IBC, there is a potential privacy issue as relaying a State on a Permissioned blockchain to another blockchain. See below for a summary of this.
 
-[On Relayer's privacy](06_appendix.md#relayer's privacy)
+[On Relayer's privacy](06_appendix.md#regarding-the-privacy-of-relayer)
 
 ## Fabric-IBC Modules
 

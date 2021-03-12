@@ -57,7 +57,7 @@ This process is also required for IBC Policy updates.
 
 ## Creation and verification of Endorsed Commitment
 
-In Fabric-IBC, [Endorsed Commitment](03_ibc.md# endorsed-commitment) is used as a Proof of Commitment that a key/value pair exists in the State of a Chaincode on a Fabric Application Channel.
+In Fabric-IBC, [Endorsed Commitment](03_ibc.md#endorsed-commitment) is used as a Proof of Commitment that a key/value pair exists in the State of a Chaincode on a Fabric Application Channel.
 
 As an example, when there are two different Fabric Application Channels, the following sequence diagram for PacketCommitment shows the flow of verification of the State on Channel2 after requesting Commitment Proof for a State on Channel1.
 
