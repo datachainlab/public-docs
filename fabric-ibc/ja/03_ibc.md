@@ -45,7 +45,7 @@ Clientの更新はHeaderの提出によって行われる。提出されたHeade
 ConsensusStateは、後述のValidity Predicateによって、Headerの検証に用いられる。
 https://github.com/cosmos/ics/tree/master/spec/ics-002-client-semantics#consensusstate
 
-Fabric-IBCでの定義については[ConsensusState](05_fabric-client-spec_ja.md#conensusstate)を参照。
+Fabric-IBCでの定義については[ConsensusState](05_fabric-client-spec.md#conensusstate)を参照。
 
 ### ClientState
 
@@ -53,14 +53,14 @@ ClientStateはあるHeightで特定のキー/値ペアがState内に存在する
 https://github.com/cosmos/ics/tree/master/spec/ics-002-client-semantics#clientstate
 
 Fabric-IBCでの定義については
-[ClientState](05_fabric-client-spec_ja.md#clientstate)を参照のこと。
+[ClientState](05_fabric-client-spec.md#clientstate)を参照のこと。
 
 ### Header
 
 HeaderはConsensusStateを更新するための情報を含む。
 https://github.com/cosmos/ics/tree/master/spec/ics-002-client-semantics#header
 
-Fabric-IBCでの定義については[Header](05_fabric-client-spec_ja.md#header)を参照のこと。
+Fabric-IBCでの定義については[Header](05_fabric-client-spec.md#header)を参照のこと。
 
 ### Validity Predicate
 
@@ -77,7 +77,7 @@ ChaincodeHeaderをWriteSetに含むProposalResponseに対して、現在登録�
 現在登録されているIBC policyに従ってChaincodeInfoに対してsignされていることを確認する。
 
  詳細については以下を参照のこと。
-[Validity Predicate](05_fabric-client-spec_ja.md#validity-predicate)
+[Validity Predicate](05_fabric-client-spec.md#validity-predicate)
 
 ### State Verification Function
 
@@ -108,7 +108,7 @@ Fabric-IBCでは、Stateの検証をする際に、後述するEndorsed Commitme
 特定のIBC Channel、Portで受信されるべき次のSequenceに対するProofを検証する。
 
 Fabric-IBCでの詳細については以下を参照のこと。
-[State Verification Functions](05_fabric-client-spec_ja.md#state-verification-functions)
+[State Verification Functions](05_fabric-client-spec.md#state-verification-functions)
 
 ### Endorsed Commitment
 
@@ -121,7 +121,7 @@ Endorsed Commitmentの検証は、Proposal Responseに対する署名が上記�
 Endorsed Commitmentを作成する用途として[Fabric IBC Modules](#fabric-ibc-modules)が提供される。
 
 Endorsed Commitmentの詳細については、以下を参照のこと。
-[Fabric Client Spec](05_fabric-client-spec_ja.md)
+[Fabric Client Spec](05_fabric-client-spec.md)
 
 ## Connection, Channel
 
@@ -136,7 +136,7 @@ Fabric-IBCでも、Connection、Channelの状態遷移モデルはIBCに従う�
 一方、それぞれの状態遷移時の検証には、Endorsed Commitmentを用いる。
 
 Connection、Channelが開かれるまでのフロー図は以下を参照のこと。
-[Connection、Channel確立](04_architecture_ja.md#connectionchannel確立)
+[Connection、Channel確立](04_architecture.md#connectionchannel確立)
 
 ## Packet
 
@@ -179,7 +179,7 @@ RelayerはFabricのclient機能を有するサービスである。そのため�
 
 Fabric-IBCでは、Permissioned Blockchain上のStateを他のBlockchainにRelayするという点に関して、プライバシーの問題が起こり得る。これに関する整理は以下を参照のこと。
 
-[RelayerのPrivacyに関して](06_appendix_ja.md#relayerのprivacyに関して)
+[RelayerのPrivacyに関して](06_appendix.md#relayerのprivacyに関して)
 
 ## Fabric-IBC Modules
 

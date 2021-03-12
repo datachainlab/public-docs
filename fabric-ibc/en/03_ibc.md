@@ -46,7 +46,7 @@ Updates to the Client are made by submitting a Header. After the submitted heade
 The ConsensusState is used to validate the Header by Validity Predicate (see below).
 https://github.com/cosmos/ics/tree/master/spec/ics-002-client-semantics#consensusstate
 
-For the definition in Fabric-IBC, please refer to [ConsensusState](05_fabric-client-spec_en.md#consensusstate).
+For the definition in Fabric-IBC, please refer to [ConsensusState](05_fabric-client-spec.md#consensusstate).
 
 ### ClientState
 
@@ -59,7 +59,7 @@ https://github.com/cosmos/ics/tree/master/spec/ics-002-client-semantics#clientst
 Header contains information to update the ConsensusState.
 See https://github.com/cosmos/ics/tree/master/spec/ics-002-client-semantics#header
 
-See [Header](05_fabric-client-spec_en.md#header) for Fabric-IBC definition.
+See [Header](05_fabric-client-spec.md#header) for Fabric-IBC definition.
 
 ### Validity Predicate.
 
@@ -74,9 +74,9 @@ This verifies that the proposal response which contains ChaincodeHeader in the W
 
 #### VerifyChaincodeInfo
 This verifies that ChaincodeInfo has been signed according to the currently registered IBC policy.
- 
+
 For details, see the following.
-[Validity Predicate](05_fabric-client-spec_en.md#validity-predicate) 
+[Validity Predicate](05_fabric-client-spec.md#validity-predicate)
 
 ### State Verification Function
 
@@ -107,7 +107,7 @@ Verifies the Proof of missing Packet Ack to be received at a specific IBC Channe
 Verifies the Proof of the next Sequence to be received on a specific IBC Channel and Port.
 
 For more information on Fabric-IBC, please refer to the following.
-[State Verification Functions](05_fabric-client-spec_en.md#state-verification-functions) 
+[State Verification Functions](05_fabric-client-spec.md#state-verification-functions)
 
 ### Endorsed Commitment
 
@@ -120,13 +120,13 @@ The verification of the Endorsed Commitment is to confirm that the signature on 
 [Fabric IBC Modules](#fabric-ibc-modules) are provided for creating aforemetioned Endorsed Commitment.
 
 For more information on Endorsed Commitment, please refer to the following
-[Fabric Client Spec](05_fabric-client-spec_en.md) 
+[Fabric Client Spec](05_fabric-client-spec.md)
 
 ## Connection, Channel
 
 In IBC, Connection is defined in [ICS-03](https://github.com/cosmos/ics/tree/master/spec/ics-003-connection-semantics) and Channel is defined in [ICS-04](https://github.com/cosmos/ics/tree/master/spec/ics-004-channel-and-packet-semantics).
 
-A Connection is a state that is held by each of the two blockchains communicating with the IBC, and is used in association with the Client. To communicate between Blockchains, a Connection must be established. 
+A Connection is a state that is held by each of the two blockchains communicating with the IBC, and is used in association with the Client. To communicate between Blockchains, a Connection must be established.
 
 The Channel provides the semantics for Message delivery between each Module on the two blockchains using the Connection.
 See the respective ICS for details.
@@ -134,7 +134,7 @@ See the respective ICS for details.
 In Fabric-IBC, the state transition models of Connection and Channel also follow IBC, while Endorsed Commitment is used for verification at each state transition.
 
 Please refer to the following flow chart for Connection and Channel establishment.
-[Connection, Channel establishment](04_architecture_en.md#connectionchannel establishment)
+[Connection, Channel establishment](04_architecture.md#connection-channel-establishment)
 
 ## Packet
 
@@ -177,7 +177,7 @@ The clientID, connectionID, channelID, port, etc. of both Chaincodes should be s
 
 In Fabric-IBC, there is a potential privacy issue as relaying a State on a Permissioned blockchain to another blockchain. See below for a summary of this.
 
-[On Relayer's privacy](06_appendix_en.md#relayer's privacy) 
+[On Relayer's privacy](06_appendix.md#regarding-the-privacy-of-relayer)
 
 ## Fabric-IBC Modules
 
