@@ -23,7 +23,7 @@ The Chaincode instance provides IBC functionality through this App.
 ### Fabric IBC Modules
 
 This is a set of chaincodes that provide the means for Fabric client to generate Proof and headers needed for state validation.
-See [Fabric IBC Modules](03_ibc_en.md#fabric-ibc-modules) for details.
+See [Fabric IBC Modules](03_ibc.md#fabric-ibc-modules) for details.
 
 ### ConfigUpdater
 
@@ -33,7 +33,7 @@ When there is a change in the state of the Fabric CA, this module provides a tra
 
 ## Connection, Channel establishment
 
-As shown in [Connection, Channel](03_ibc_en.md#connection-channel), the state transition model of Connection and Channel in Fabric-IBC follows IBC. At the same time, each flow needs the means for verification using Endorsed Commitment.
+As shown in [Connection, Channel](03_ibc.md#connection-channel), the state transition model of Connection and Channel in Fabric-IBC follows IBC. At the same time, each flow needs the means for verification using Endorsed Commitment.
 
 The following sequence diagram shows the flow until the IBC Connection and Channel are opened between two Fabric Application Channels.
 
@@ -41,15 +41,15 @@ The following sequence diagram shows the flow until the IBC Connection and Chann
 ![](img/conn_channel_sequence.png)
 
 
-For more information about Endorsed Commitment, please refer to [Endorsed Commitment](03_ibc_en.md#endorsed-commitment).
+For more information about Endorsed Commitment, please refer to [Endorsed Commitment](03_ibc.md#endorsed-commitment).
 
-For verification functions starting with Verify, refer to [State Verification Function](05_fabric-client-spec_en.md#state-verification-functions).
+For verification functions starting with Verify, refer to [State Verification Function](05_fabric-client-spec.md#state-verification-functions).
 
 
 ## Client update flow
 
 The following sequence diagram shows the flow of the Client update process after the IBC Connection and Channel are established between two Fabric Application Channels.
-Here, we show the example of the update of Sequence, which is processed based on the state update maintained in [Client](03_ibc_en.md#client).
+Here, we show the example of the update of Sequence, which is processed based on the state update maintained in [Client](03_ibc.md#client).
 This process is also required for IBC Policy updates.
 
 ![](img/client_update.png)
@@ -57,7 +57,7 @@ This process is also required for IBC Policy updates.
 
 ## Creation and verification of Endorsed Commitment
 
-In Fabric-IBC, [Endorsed Commitment](03_ibc_en.md# endorsed-commitment) is used as a Proof of Commitment that a key/value pair exists in the State of a Chaincode on a Fabric Application Channel.
+In Fabric-IBC, [Endorsed Commitment](03_ibc.md# endorsed-commitment) is used as a Proof of Commitment that a key/value pair exists in the State of a Chaincode on a Fabric Application Channel.
 
 As an example, when there are two different Fabric Application Channels, the following sequence diagram for PacketCommitment shows the flow of verification of the State on Channel2 after requesting Commitment Proof for a State on Channel1.
 
