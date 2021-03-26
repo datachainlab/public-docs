@@ -27,15 +27,15 @@ IBC ProtocolはInter-Blockchain Communication Protocolの事で、特に本文�
 |               +---------------------------------------------------------+     +----------+ |
 +--------------------------------------------------------------------------------------------+
 ```
-    https://github.com/cosmos/ics/blob/master/ibc/2_IBC_ARCHITECTURE.md#diagram
+    https://github.com/cosmos/ibc/blob/old/ibc/2_IBC_ARCHITECTURE.md#diagram
 
-CosmosのICSに関する詳細は、[github上のリポジトリ](https://github.com/cosmos/ics) を参照のこと。一部の仕様については[日本語訳](https://github.com/cosmos/ics/tree/master/translation/ja)も存在する。
+CosmosのIBCに関する詳細は、[github上のリポジトリ](https://github.com/cosmos/ibc) を参照のこと。一部の仕様については[日本語訳](https://github.com/cosmos/ibc/tree/old/translation/ja)も存在する。
 
 以降では、特にFabric IBCがIBCを実装するにあたって必要となる仕様について言及する。
 
 ## Client
 
-ClientはIBC上の[ICS-002](https://github.com/cosmos/ics/tree/master/spec/ics-002-client-semantics)で定義されたlight clientを指す。
+ClientはIBC上の[ICS-002](https://github.com/cosmos/ibc/tree/master/spec/core/ics-002-client-semantics)で定義されたlight clientを指す。
 Clientの目的は、IBCで通信するBlockchainが、他方のBlockchainで合意されたStateの更新を検証できるようにすることである。
 
 Clientの更新はHeaderの提出によって行われる。提出されたHeaderの検証が行われた後、内部で保持するConsensusStateとClientStateを更新する。
@@ -43,14 +43,14 @@ Clientの更新はHeaderの提出によって行われる。提出されたHeade
 ### ConsensusState
 
 ConsensusStateは、後述のValidity Predicateによって、Headerの検証に用いられる。
-https://github.com/cosmos/ics/tree/master/spec/ics-002-client-semantics#consensusstate
+https://github.com/cosmos/ibc/tree/master/spec/core/ics-002-client-semantics#consensusstate
 
 Fabric-IBCでの定義については[ConsensusState](05_fabric-client-spec.md#conensusstate)を参照。
 
 ### ClientState
 
 ClientStateはあるHeightで特定のキー/値ペアがState内に存在する、あるいは存在していないことのProofを検証するために用いられる。
-https://github.com/cosmos/ics/tree/master/spec/ics-002-client-semantics#clientstate
+https://github.com/cosmos/ibc/tree/master/spec/core/ics-002-client-semantics#clientstate
 
 Fabric-IBCでの定義については
 [ClientState](05_fabric-client-spec.md#clientstate)を参照のこと。
@@ -58,14 +58,14 @@ Fabric-IBCでの定義については
 ### Header
 
 HeaderはConsensusStateを更新するための情報を含む。
-https://github.com/cosmos/ics/tree/master/spec/ics-002-client-semantics#header
+https://github.com/cosmos/ibc/tree/master/spec/core/ics-002-client-semantics#header
 
 Fabric-IBCでの定義については[Header](05_fabric-client-spec.md#header)を参照のこと。
 
 ### Validity Predicate
 
 現在のConsensusStateに基づいてHeaderを検証する関数を指す。
-https://github.com/cosmos/ics/tree/master/spec/ics-002-client-semantics#validity-predicate
+https://github.com/cosmos/ibc/tree/master/spec/core/ics-002-client-semantics#validity-predicate
 
 Fabric-IBCでは、Headerを検証する際に、後述するEndorsed Commitmentの検証も行う。
 内部では以下のような検証用関数を用いる。
@@ -84,7 +84,7 @@ ChaincodeHeaderをWriteSetに含むProposalResponseに対して、現在登録�
 Clientが追跡すべきStateの内部状態を検証する関数を指す。
 
 Fabric-IBCでは、Stateの検証をする際に、後述するEndorsed Commitmentの検証も行う。
-次のような関数がICSによって[定義されている](https://github.com/cosmos/ics/tree/master/spec/ics-002-client-semantics#state-verification)。
+次のような関数がICSによって[定義されている](https://github.com/cosmos/ibc/tree/master/spec/core/ics-002-client-semantics#state-verification)。
 
 #### verifyClientConsensusState
 対象のBlockchain上で個別のClientに保持されるConsensusStateへのProofを検証する。
@@ -112,7 +112,7 @@ Fabric-IBCでの詳細については以下を参照のこと。
 
 ### Endorsed Commitment
 
-IBCでは、あるキー/値ペアが通信相手のBlockchain上のStateに存在している（あるいは、存在していない）というCommitmentに対して、少ない計算コストで検証できるProofが必要になる。この詳細は[ICS-023](https://github.com/cosmos/ics/tree/master/spec/ics-023-vector-commitments)で定義される。
+IBCでは、あるキー/値ペアが通信相手のBlockchain上のStateに存在している（あるいは、存在していない）というCommitmentに対して、少ない計算コストで検証できるProofが必要になる。この詳細は[ICS-023](https://github.com/cosmos/ibc/tree/master/spec/core/ics-023-vector-commitments)で定義される。
 
 Fabric-IBCでは、ClientState内で保持されるEndorsement Policyを満たすEndorserに対して、Read-Write Setに上記のペアが含まれるようなProposal Responseを返すChaincodeをQueryすることによってProofを作成する。これをEndorsed Commitmentと呼ぶことにする。
 
@@ -125,7 +125,7 @@ Endorsed Commitmentの詳細については、以下を参照のこと。
 
 ## Connection, Channel
 
-IBCにおいて、Connectionは[ICS-03](https://github.com/cosmos/ics/tree/master/spec/ics-003-connection-semantics)、Channelは[ICS-04](https://github.com/cosmos/ics/tree/master/spec/ics-004-channel-and-packet-semantics)で定義される。
+IBCにおいて、Connectionは[ICS-03](https://github.com/cosmos/ibc/tree/master/spec/core/ics-003-connection-semantics)、Channelは[ICS-04](https://github.com/cosmos/ibc/tree/master/spec/core/ics-004-channel-and-packet-semantics)で定義される。
 
 Connectionは、IBCで通信する2つのBlockchain上でそれぞれが持つ状態で、Clientと関連付けて利用される。Blockchain間で通信するには、Connectionを確立する必要がある。
 
@@ -140,15 +140,15 @@ Connection、Channelが開かれるまでのフロー図は以下を参照のこ
 
 ## Packet
 
-[ICS-04](https://github.com/cosmos/ics/tree/master/spec/ics-004-channel-and-packet-semantics)で定義される。
+[ICS-04](https://github.com/cosmos/ibc/tree/master/spec/core/ics-004-channel-and-packet-semantics)で定義される。
 RelayerがBlockchain間でrelayするための情報として、送信元、宛先双方で使用するIBC ChannelやPortの情報とdata等を持つ。dataは、個別のModuleに実装されたロジックによって規定される。
 
 ## Relayer
 
-Relayerは[ICS-018](https://github.com/cosmos/ics/tree/master/spec/ics-018-relayer-algorithms)で定義される。
+Relayerは[ICS-018](https://github.com/cosmos/ibc/tree/master/spec/relayer/ics-018-relayer-algorithms)で定義される。
 IBC上で、あるBlockchain上のトランザクションの状態を読み取り、Blockchain間でトランザクションをPacketとしてrelayする機能を持つオフチェーンプロセスのことである。
 
-ICS上で[言及](https://github.com/cosmos/ics/tree/master/spec/ics-018-relayer-algorithms#desired-properties)されるように、Relayerは以下のような性質を満たすことが望ましい。Fabric-IBCにおいても、これらは満たされる。
+ICS上で[言及](https://github.com/cosmos/ibc/tree/master/spec/relayer/ics-018-relayer-algorithms#desired-properties)されるように、Relayerは以下のような性質を満たすことが望ましい。Fabric-IBCにおいても、これらは満たされる。
 
 - Byzantineな振る舞いのRelayerがいる場合にも、IBCが満たすべき重要な安全性であるexactly-onceやdeliver-or-timeoutが損なわれないこと。
 - 正常動作しているRelayerが1つあれば、Packetのrelayに関するlivenessが保たれること。

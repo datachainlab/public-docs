@@ -27,16 +27,16 @@
 |               +---------------------------------------------------------+     +----------+ |
 +--------------------------------------------------------------------------------------------+
 ```
-    https://github.com/cosmos/ics/blob/master/ibc/2_IBC_ARCHITECTURE.md#diagram
+    https://github.com/cosmos/ibc/blob/old/ibc/2_IBC_ARCHITECTURE.md#diagram
 
 
-For more information about ICS in Cosmos, please refer to [repository on github](https://github.com/cosmos/ics).
+For more information about IBC in Cosmos, please refer to [repository on github](https://github.com/cosmos/ibc).
 
 In the following sections, we will specifically mention the specifications that are required for Fabric IBC to implement IBC.
 
 ## Client
 
-Client refers to the light client defined in [ICS-002](https://github.com/cosmos/ics/tree/master/spec/ics-002-client-semantics) on IBC.
+Client refers to the light client defined in [ICS-002](https://github.com/cosmos/ibc/tree/master/spec/core/ics-002-client-semantics) on IBC.
 The purpose of the Client is to allow a Blockchain communicating with an IBC to verify updates to the State agreed upon by the other Blockchain.
 
 Updates to the Client are made by submitting a Header. After the submitted header is verified, the internally maintained ConsensusState and ClientState are updated.
@@ -44,27 +44,27 @@ Updates to the Client are made by submitting a Header. After the submitted heade
 ### ConsensusState
 
 The ConsensusState is used to validate the Header by Validity Predicate (see below).
-https://github.com/cosmos/ics/tree/master/spec/ics-002-client-semantics#consensusstate
+https://github.com/cosmos/ibc/tree/master/spec/core/ics-002-client-semantics#consensusstate
 
 For the definition in Fabric-IBC, please refer to [ConsensusState](05_fabric-client-spec.md#consensusstate).
 
 ### ClientState
 
 ClientState is used to verify the Proof that a particular key/value pair exists or not in the State at a given Height.
-https://github.com/cosmos/ics/tree/master/spec/ics-002-client-semantics#clientstate
+https://github.com/cosmos/ibc/tree/master/spec/core/ics-002-client-semantics#clientstate
 
 
 ### Header
 
 Header contains information to update the ConsensusState.
-See https://github.com/cosmos/ics/tree/master/spec/ics-002-client-semantics#header
+See https://github.com/cosmos/ibc/tree/master/spec/core/ics-002-client-semantics#header
 
 See [Header](05_fabric-client-spec.md#header) for Fabric-IBC definition.
 
 ### Validity Predicate.
 
 This refers to a function that validates the Header based on the current ConsensusState.
-https://github.com/cosmos/ics/tree/master/spec/ics-002-client-semantics#validity-predicate
+https://github.com/cosmos/ibc/tree/master/spec/core/ics-002-client-semantics#validity-predicate
 
 In Fabric-IBC, when validating the Header, it also validates the Endorsed Commitment (described below).
 The following verification functions are used internally.
@@ -83,7 +83,7 @@ For details, see the following.
 This refers to the function that verifies the internal state of the State that the Client should track.
 
 In Fabric-IBC, when verifying the State, it also verifies the Endorsed Commitment as described below.
-The following function is [defined](https://github.com/cosmos/ics/tree/master/spec/ics-002-client-semantics#state-verification) by ICS.
+The following function is [defined](https://github.com/cosmos/ibc/tree/master/spec/core/ics-002-client-semantics#state-verification) by ICS.
 
 #### verifyClientConsensusState
 Verifies the Proof to the ConsensusState held in a specific Client on the target blockchain.
@@ -111,7 +111,7 @@ For more information on Fabric-IBC, please refer to the following.
 
 ### Endorsed Commitment
 
-IBCs require Proof of Commitment to verify that a key/value pair exists (or does not exist) in the State of the target blockchain, with a small computational cost. This detail is defined in [ICS-023](https://github.com/cosmos/ics/tree/master/spec/ics-023-vector-commitments).
+IBCs require Proof of Commitment to verify that a key/value pair exists (or does not exist) in the State of the target blockchain, with a small computational cost. This detail is defined in [ICS-023](https://github.com/cosmos/ibc/tree/master/spec/core/ics-023-vector-commitments).
 
 In Fabric-IBC, a Proof is created by querying a Chaincode, which returns a proposal response, to an Endorser that satisfies the Endorsement Policy maintained in the ClientState, such that the Read-Write Set contains the above pair. We define this as an Endorsed Commitment.
 
@@ -124,7 +124,7 @@ For more information on Endorsed Commitment, please refer to the following
 
 ## Connection, Channel
 
-In IBC, Connection is defined in [ICS-03](https://github.com/cosmos/ics/tree/master/spec/ics-003-connection-semantics) and Channel is defined in [ICS-04](https://github.com/cosmos/ics/tree/master/spec/ics-004-channel-and-packet-semantics).
+In IBC, Connection is defined in [ICS-03](https://github.com/cosmos/ibc/tree/master/spec/core/ics-003-connection-semantics) and Channel is defined in [ICS-04](https://github.com/cosmos/ibc/tree/master/spec/core/ics-004-channel-and-packet-semantics).
 
 A Connection is a state that is held by each of the two blockchains communicating with the IBC, and is used in association with the Client. To communicate between Blockchains, a Connection must be established.
 
@@ -138,15 +138,15 @@ Please refer to the following flow chart for Connection and Channel establishmen
 
 ## Packet
 
-Packet is defined in [ICS-04](https://github.com/cosmos/ics/tree/master/spec/ics-004-channel-and-packet-semantics).
+Packet is defined in [ICS-04](https://github.com/cosmos/ibc/tree/master/spec/core/ics-004-channel-and-packet-semantics).
 In order for a Relayer to relay between blockchains, it has information about the IBC Channel, Port used by both the source and destination, and data. The data is defined by the logic implemented in each module.
 
 ## Relayer
 
-Relayer is defined in [ICS-018](https://github.com/cosmos/ics/tree/master/spec/ics-018-relayer-algorithms).
+Relayer is defined in [ICS-018](https://github.com/cosmos/ibc/tree/master/spec/relayer/ics-018-relayer-algorithms).
 It is an off-chain process defined by IBC that has the ability to read the state of transactions on a blockchain and relay them as Packets between blockchains.
 
-As [mentioned](https://github.com/cosmos/ics/tree/master/spec/ics-018-relayer-algorithms#desired-properties) on ICS, a Relayer should satisfy the following properties In Fabric-IBC, these properties are also satisfied.
+As [mentioned](https://github.com/cosmos/ibc/tree/master/spec/relayer/ics-018-relayer-algorithms#desired-properties) on ICS, a Relayer should satisfy the following properties In Fabric-IBC, these properties are also satisfied.
 
 - The presence of a Relayer with Byzantine behavior does not compromise the important safety properties that IBC should satisfy, namely exactly-once and deliver-or-timeout.
 - If there is at least one Relayer that is behaving normally, the liveness of the Packet relay is maintained.

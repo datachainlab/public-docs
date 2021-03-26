@@ -23,10 +23,10 @@ IBCとは、Cosmosを中心として開発が進められているBlockchain間�
 
 IBCは、以下のようなフローによる通信を行う。
 
-![https://github.com/cosmos/ics/blob/master/ibc/2_IBC_ARCHITECTURE.md#diagram](https://paper-attachments.dropbox.com/s_BF6A6C558FB10E2A2F4E74E9F7B342EF6228422735BC5F474C1D1BF9C0273659_1596156271353_Screenshot+from+2020-07-31+09-44-07.png)
+![https://github.com/cosmos/ibc/blob/old/ibc/2_IBC_ARCHITECTURE.md#diagram](https://paper-attachments.dropbox.com/s_BF6A6C558FB10E2A2F4E74E9F7B342EF6228422735BC5F474C1D1BF9C0273659_1596156271353_Screenshot+from+2020-07-31+09-44-07.png)
 
 
-各用語はICSの[Github](https://github.com/cosmos/ics) repositoryにて詳細な定義、説明がある。
+各用語はIBCの[Github](https://github.com/cosmos/ibc) repositoryにて詳細な定義、説明がある。
 
 
 - **Client**
@@ -54,19 +54,19 @@ IBCは、以下のようなフローによる通信を行う。
 1. DLT *A* 上
     1. Module（アプリケーション固有）
     2. Handler（複数の ICS 間で部分的に定義されます）
-    3. Packet（[ICS 4](https://github.com/cosmos/ics/blob/master/translation/ja/spec/ics-004-channel-and-packet-semantics) で定義されます）
-    4. Channel（[ICS 4](https://github.com/cosmos/ics/blob/master/translation/ja/spec/ics-004-channel-and-packet-semantics) で定義されます）
-    5. Connection（[ICS 3](https://github.com/cosmos/ics/blob/master/translation/ja/spec/ics-003-connection-semantics) で定義されます）
-    6. Client（[ICS 2](https://github.com/cosmos/ics/blob/master/translation/ja/spec/ics-002-client-semantics) で定義されます）
+    3. Packet（[ICS 4](https://github.com/cosmos/ibc/blob/old/translation/ja/spec/ics-004-channel-and-packet-semantics) で定義されます）
+    4. Channel（[ICS 4](https://github.com/cosmos/ibc/blob/old/translation/ja/spec/ics-004-channel-and-packet-semantics) で定義されます）
+    5. Connection（[ICS 3](https://github.com/cosmos/ibc/blob/old/translation/ja/spec/ics-003-connection-semantics) で定義されます）
+    6. Client（[ICS 2](https://github.com/cosmos/ibc/blob/old/translation/ja/spec/ics-002-client-semantics) で定義されます）
     7. Consensus（送信 packet を含むトランザクションを確定します）
 2. オフチェーン
-    1. Relayer（[ICS 18](https://github.com/cosmos/ics/blob/master/translation/ja/spec/ics-018-relayer-algorithms) で定義されます）
+    1. Relayer（[ICS 18](https://github.com/cosmos/ibc/blob/old/translation/ja/spec/ics-018-relayer-algorithms) で定義されます）
 3. DLT *B* 上
     1. Consensus（受信 packet を含むトランザクションを確定します）
-    2. Client（[ICS 2](https://github.com/cosmos/ics/blob/master/translation/ja/spec/ics-002-client-semantics) で定義されます）
-    3. Connection（[ICS 3](https://github.com/cosmos/ics/blob/master/translation/ja/spec/ics-003-connection-semantics) で定義されます）
-    4. Channel（[ICS 4](https://github.com/cosmos/ics/blob/master/translation/ja/spec/ics-004-channel-and-packet-semantics) で定義されます）
-    5. Packet（[ICS 4](https://github.com/cosmos/ics/blob/master/translation/ja/spec/ics-004-channel-and-packet-semantics) で定義されます）
+    2. Client（[ICS 2](https://github.com/cosmos/ibc/blob/old/translation/ja/spec/ics-002-client-semantics) で定義されます）
+    3. Connection（[ICS 3](https://github.com/cosmos/ibc/blob/old/translation/ja/spec/ics-003-connection-semantics) で定義されます）
+    4. Channel（[ICS 4](https://github.com/cosmos/ibc/blob/old/translation/ja/spec/ics-004-channel-and-packet-semantics) で定義されます）
+    5. Packet（[ICS 4](https://github.com/cosmos/ibc/blob/old/translation/ja/spec/ics-004-channel-and-packet-semantics) で定義されます）
     6. Handler（複数の ICS 間で部分的に定義されます）
     7. Module（アプリケーション固有）
 
@@ -140,7 +140,7 @@ func Peg(ctx contract.Context, store cross.Store) {
 }
 ```
 
-```go    
+```go
 // Chain B
 func Lock(ctx contract.Context, store cross.Store) {
     fromID, amount := ctx.Args()[0], ctx.Args()[1]
@@ -188,7 +188,7 @@ Cross Frameworkでは、Transactionの開始の際に`Signers`で指定された
 
 
 1. Accountが鍵を持つ場合、Initiator chainに対し`MsgInitiate`の提出とともに各Accountによる署名を提出してそれを検証する。
-   
+
 2. Accountが鍵を持たない場合、Initiator chain上に提出された`MsgInitiate`の提出により発行されたTxを示すIDに対して、各Accountが非同期に承認する。
 
 3. Accountが鍵を持たないかつInitiator chainにアクセスできない場合、各AccountはContract Moduleを含むChainに対して承認を行い、その結果をPacketを経由してInitiator chain上で検証する方法。これはPermissionedなchainに適したフローである。
@@ -373,9 +373,9 @@ Simple commit protocolは、Participantの数に対する制約があるAtomic c
 
 
     - Bは`PacketDataCall`を受け取り、指定されたContract関数を実行する。
-    
+
     - 実行に成功した場合、Commitを行う。その後、`PacketCallAcknowledgement`に`Status`として`COMMIT_OK`をセットして、AとのChannelに送信する。
-    
+
     - 実行に失敗した場合、Abortを行う。その後、`PacketCallAcknowledgement`に`Status`として`COMMIT_FAILED`をセットして、AとのChannelに送信する。
 
 

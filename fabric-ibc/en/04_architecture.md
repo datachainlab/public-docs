@@ -61,7 +61,7 @@ In Fabric-IBC, [Endorsed Commitment](03_ibc.md#endorsed-commitment) is used as a
 
 As an example, when there are two different Fabric Application Channels, the following sequence diagram for PacketCommitment shows the flow of verification of the State on Channel2 after requesting Commitment Proof for a State on Channel1.
 
-![](/img/endorsed_commitment_sequence.png)
+![](img/endorsed_commitment_sequence.png)
 
 Note: The process in the grayed area (Chaincode) in the above diagram is a process that occurs on a single Peer and does not involve network communication between internal components.
 
