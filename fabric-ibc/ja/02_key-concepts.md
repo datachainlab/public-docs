@@ -1,9 +1,9 @@
 # Key Concepts
 
-## ICS準拠
+## IBC準拠
 
-[ICS](https://github.com/cosmos/ics)という標準化が進んでいるブロックチェーン間コミュニケーションの仕様をサポートする。
-これにより、ICS仕様を実装するBlockchain、DLT、従来の中央システムとのコミュニケーションが可能となる。
+[IBC](https://github.com/cosmos/ibc)という標準化が進んでいるブロックチェーン間コミュニケーションの仕様をサポートする。
+これにより、IBC仕様を実装するBlockchain、DLT、従来の中央システムとのコミュニケーションが可能となる。
 
 ## コミュニケーションの自動化
 

@@ -1,6 +1,6 @@
 # Fabric-client Spec
 
-Fabric-clientは、[ICS-02](https://github.com/cosmos/ics/tree/master/spec/ics-002-client-semantics)を満たすHyperledger fabric用のclientである。
+Fabric-clientは、[ICS-02](https://github.com/cosmos/ibc/tree/master/spec/core/ics-002-client-semantics)を満たすHyperledger fabric用のclientである。
 
 ## ClientState
 

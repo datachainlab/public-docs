@@ -1,9 +1,9 @@
 # Key Concepts
 
-## ICS Compliance
+## IBC Compliance
 
-Fabric-IBC supports [ICS](https://github.com/cosmos/ics), specifications for inter-blockchain communication that is being standardized.
-This will enable communication between blockchains, DLTs, and legacy systems that implement the ICS specifications.
+Fabric-IBC supports [IBC](https://github.com/cosmos/ibc), specifications for inter-blockchain communication that is being standardized.
+This will enable communication between blockchains, DLTs, and legacy systems that implement the IBC specifications.
 
 ## Automated communication
 
@@ -26,6 +26,6 @@ Developers can easily migrate business logic and data models from existing Chain
 
 ## Extendable Architecture
 
-The core of Fabric-IBC focuses on the ability to send and receive Packets, the means of communication with other blockchains. 
+The core of Fabric-IBC focuses on the ability to send and receive Packets, the means of communication with other blockchains.
 Developers can develop their own modules. For example, they can add functions that enhance the security and privacy of Packet's data.
 We have already developed several modules, such as Private module, Cross Framework, etc.

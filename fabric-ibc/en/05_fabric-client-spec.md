@@ -1,6 +1,6 @@
 # Fabric-client Spec
 
-Fabric-client is a client for Hyperledger fabric that satisfies [ICS-02](https://github.com/cosmos/ics/tree/master/spec/ics-002-client-semantics).
+Fabric-client is a client for Hyperledger fabric that satisfies [ICS-02](https://github.com/cosmos/ibc/tree/master/spec/core/ics-002-client-semantics).
 
 ## ClientState
 
@@ -169,7 +169,7 @@ It is necessary to make the order of sign deterministic, also it is necessary to
 
 The Sequence value is initialized at the time of CreateClient, and thereafter is incremented when other state updates are performed with reference to the state associated with the Sequence value.
 
-| update order | update target | Sequence value on ClientState | Notes | 
+| update order | update target | Sequence value on ClientState | Notes |
 | ---- | ---------------- | ------------------------------------------------- | --------------------------------- |
 | 0    | chaincodeHeader  | chaincodeHeader.sequence
 | 1    | ibcPolicy.policy | ibcPolicy.sequence                            |                                   |
